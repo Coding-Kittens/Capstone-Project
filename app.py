@@ -14,7 +14,7 @@ CORS(app)
 def serve():
     return send_from_directory(app.static_folder,'index.html')
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///library_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL',"postgresql:///library_db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "catsarethebest"
