@@ -2,7 +2,7 @@
 from flask import Flask, redirect, render_template, request,flash,session ,jsonify, g
 from models import Image,User,Library,Book,Page,Note,Character,Place,BookMark,BookPlace,BookCharacter,LibraryBook,connect_db,db
 from werkzeug.utils import secure_filename
-import flask_cors import CORS,cross_origin
+from flask_cors import CORS,cross_origin
 import uuid as uuid
 import base64
 import os
