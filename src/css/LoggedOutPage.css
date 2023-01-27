@@ -1,0 +1,32 @@
+#signup_btn{
+  position: fixed;
+  top: 80%;
+  left: 45%;
+  font-size: .7em;
+}
+
+#newBook{
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 50%;
+  z-index: -3;
+}
+
+
+.LoggedOutPage p{
+  font-family: Mystery,cursive;
+  position: absolute;
+  top: 20%;
+  left: 26%;
+  color: black;
+}
+
+
+.LoggedOutPage h1{
+  font-size: 3em;
+  position: absolute;
+  left: 37%;
+  top: -7%;
+  color: white;
+}
