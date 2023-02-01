@@ -30,6 +30,7 @@ class User(db.Model):
     is_pro_user = db.Column(db.Boolean,nullable = False,default = False)
     first_name = db.Column(db.Text,nullable = False)
     last_name = db.Column(db.Text,nullable = False)
+    bio=db.Column(db.Text)
     profile_image = db.Column(db.Text,db.ForeignKey('images.name'))
     pic =db.relationship('Image',backref='userProfile',foreign_keys=[profile_image])
 
@@ -59,6 +60,14 @@ class User(db.Model):
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
+
+    def serialize(self):
+        return {
+                "name": self.full_name(),
+                "bio": self.bio,
+                "username": self.username,
+                }
+
 
 class Library (db.Model):
     __tablename__ ='libraries'
@@ -104,7 +113,7 @@ class Book(db.Model):
                 "cover_color": self.cover_color,
                 "cover_image": self.cover_image,
                 "theme": self.theme,
-                "author": self.user.full_name,
+                "author": self.user.full_name(),
                 }
 
 class Page(db.Model):
@@ -143,7 +152,6 @@ class Note(db.Model):
                 "title": self.title,
                 "text": self.text,
                 "book_id": self.book_id,
-                "username": self.username,
                 "order": self.order,
                 "image": self.image,
                 }
@@ -166,7 +174,6 @@ class Character(db.Model):
                 "name": self.name,
                 "description": self.description,
                 "birthday": self.birthday,
-                "username": self.username,
                 "extra_info": self.extra_info,
                 "story": self.story,
                 "image": self.image,
@@ -181,7 +188,7 @@ class Place(db.Model):
     description = db.Column(db.Text)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
     extra_info = db.Column(db.Text)
-    books =db.relationship('Book',secondary='book_places',backref='places')
+    books =db.relationship('Book',secondary='book_places')
     pic =db.relationship('Image',backref='places')
     is_public = db.Column(db.Boolean,nullable = False,default = False)
     def serialize(self):
