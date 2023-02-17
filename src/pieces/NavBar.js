@@ -8,8 +8,10 @@ const theme = useContext(ThemeContext);
       <NavLink className="Nav-Home" end to={"/"}> Home </NavLink>
       <NavLink className="Nav-Login" end to={"/login"}> Login</NavLink>
       <NavLink className="Nav-SignUp" end to={"/signUp"}>Sign Up</NavLink>
-      <a onClick ={logOut}>Logout</a>
+
+      <button type="button" onClick ={logOut}>Logout</button>
   </div>
 }
 
 export default NavBar;
+  //<a onClick ={logOut}>Logout</a>
