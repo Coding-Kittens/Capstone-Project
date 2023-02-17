@@ -16,7 +16,7 @@ class Image(db.Model):
     __tablename__ ='images'
     name = db.Column(db.Text,primary_key=True)
     path = db.Column(db.Text)
-    username = db.Column(db.String(20),db.ForeignKey('users.username'),nullable = False)
+    username = db.Column(db.String(20),db.ForeignKey('users.username',ondelete='CASCADE'),nullable = False)
     user = db.relationship('User',backref='images',foreign_keys=[username])
     # img = db.Column(db.LargeBinary, nullable = False)
     # type = db.Column(db.Text,nullable = False)
@@ -27,7 +27,6 @@ class User(db.Model):
 
     username = db.Column(db.String(20),primary_key=True)
     password = db.Column(db.Text,nullable = False)
-    is_pro_user = db.Column(db.Boolean,nullable = False,default = False)
     first_name = db.Column(db.Text,nullable = False)
     last_name = db.Column(db.Text,nullable = False)
     bio=db.Column(db.Text)
@@ -35,7 +34,7 @@ class User(db.Model):
     pic =db.relationship('Image',backref='userProfile',foreign_keys=[profile_image])
 
     @classmethod
-    def register(cls, username, password,first_name, last_name, is_pro_user):
+    def register(cls, username, password,first_name, last_name, is_pro_user=False):
         """registers a new user"""
         hashed_b = bcrypt.generate_password_hash(password)
 
@@ -44,7 +43,6 @@ class User(db.Model):
         return cls(
             username=username,
             password=hashed,
-            is_pro_user=is_pro_user,
             first_name=first_name,
             last_name=last_name,
         )
@@ -75,7 +73,7 @@ class Library (db.Model):
     name = db.Column(db.String(100),nullable = False)
     description = db.Column(db.String(200),nullable = False)
     is_public = db.Column(db.Boolean,nullable = False,default = False)
-    username = db.Column(db.String(20),db.ForeignKey('users.username'),nullable = False)
+    username = db.Column(db.String(20),db.ForeignKey('users.username',ondelete='cascade'),nullable = False)
     books = db.relationship('Book',secondary='library_books',backref='libraries')
     user = db.relationship('User',backref='libraries')
 
@@ -95,7 +93,7 @@ class Book(db.Model):
     is_public = db.Column(db.Boolean,nullable = False,default = False)
     title = db.Column(db.String(100),nullable = False)
     synopsys = db.Column(db.String(200))
-    username = db.Column(db.String(20),db.ForeignKey('users.username'),nullable = False)
+    username = db.Column(db.String(20),db.ForeignKey('users.username',ondelete='cascade'),nullable = False)
     text_color = db.Column(db.Text,nullable = False,default='#FFFFFF')
     cover_color = db.Column(db.Text,nullable = False,default='#874148')
     cover_image = db.Column(db.Text,db.ForeignKey('images.name'))
@@ -124,7 +122,7 @@ class Page(db.Model):
     text = db.Column(db.Text)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
     page_num = db.Column(db.Integer,nullable = False)
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),nullable = False)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='cascade'),nullable = False)
     book =db.relationship('Book',backref='pages')
     pic =db.relationship('Image',backref='pages')
     def serialize(self):
@@ -143,7 +141,7 @@ class Note(db.Model):
     title = db.Column(db.Text,nullable = False)
     text = db.Column(db.Text,nullable = False)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),nullable = False)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),nullable = False)
     order = db.Column(db.Integer)
     book =db.relationship('Book',backref='notes')
     pic =db.relationship('Image',backref='notes')
@@ -188,7 +186,7 @@ class Place(db.Model):
     description = db.Column(db.Text)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
     extra_info = db.Column(db.Text)
-    books =db.relationship('Book',secondary='book_places')
+    books =db.relationship('Book',secondary='book_places',backref='places')
     pic =db.relationship('Image',backref='places')
     is_public = db.Column(db.Boolean,nullable = False,default = False)
     def serialize(self):
@@ -203,30 +201,31 @@ class Place(db.Model):
 class BookMark(db.Model):
     """ BookMark model """
     __tablename__ ='bookmarks'
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),primary_key=True)
-    page_id = db.Column(db.Integer,db.ForeignKey('pages.id'),primary_key=True)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),primary_key=True)
+    page_id = db.Column(db.Integer,db.ForeignKey('pages.id',ondelete='CASCADE'),primary_key=True)
     text = db.Column(db.Text)
     book =db.relationship('Book',backref='bookmarks')
-    page =db.relationship('Book',backref='bookmark')
+    page =db.relationship('Page',backref='bookmark')
     def serialize(self):
         return {"book_id": self.book_id,
                 "page_id": self.page_id,
-                "text": self.synopsys,
+                "text": self.text,
+                "page_num": self.page.page_num,
                 }
 
 class BookPlace(db.Model):
     """ Book place model """
     __tablename__ ='book_places'
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),primary_key=True)
-    place_id = db.Column(db.Integer,db.ForeignKey('places.id'),primary_key=True)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),primary_key=True)
+    place_id = db.Column(db.Integer,db.ForeignKey('places.id',ondelete='CASCADE'),primary_key=True)
 
 
 
 class BookCharacter(db.Model):
     """ Book character model """
     __tablename__ ='book_characters'
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),primary_key=True)
-    character_id = db.Column(db.Integer,db.ForeignKey('characters.id'),primary_key=True)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),primary_key=True)
+    character_id = db.Column(db.Integer,db.ForeignKey('characters.id',ondelete='CASCADE'),primary_key=True)
 
 
 
@@ -234,5 +233,5 @@ class BookCharacter(db.Model):
 class LibraryBook(db.Model):
     """model for what books are in what libraries"""
     __tablename__ = 'library_books'
-    library_id = db.Column(db.Integer,db.ForeignKey('libraries.id'),primary_key=True)
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),primary_key=True)
+    library_id = db.Column(db.Integer,db.ForeignKey('libraries.id',ondelete='CASCADE'),primary_key=True)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),primary_key=True)

@@ -1,6 +1,6 @@
 import useFields from '../hooks/useFields';
 
-const ChangePasswordform =(changePassword)=>{
+const ChangePasswordform =({changePassword})=>{
 
   const initData ={
 old_password: '',

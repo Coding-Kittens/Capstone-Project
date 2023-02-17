@@ -1,70 +1,75 @@
 import {Route,Routes,useNavigate} from 'react-router-dom';
-import NavBar from './NavBar'
-import HomePage from './HomePage'
-import UserPage from './UserPage'
-import PageNotFound from './PageNotFound'
+import NavBar from './pieces/NavBar'
+import HomePage from './pages/HomePage'
+import UserPage from './pages/UserPage'
+import PageNotFound from './pages/PageNotFound'
 import LoginForm from './forms/LoginForm'
 import SignUpForm from './forms/SignUpForm'
 import NewBookForm from './forms/NewBookForm'
 import NewLibraryForm from './forms/NewLibraryForm'
 import UserSettingsForm from './forms/UserSettingsForm'
-import Search from './Search'
-import UserLibraries from './UserLibraries'
-import Settings from './Settings'
-import WritingPage from './WritingPage'
-import ReadingPage from './ReadingPage'
-import Library from './Library'
+import Search from './pages/Search'
+import UserLibraries from './pages/UserLibraries'
+import UserBooks from './pages/UserBooks'
+import Settings from './pages/Settings'
+import WritingPage from './pages/WritingPage'
+import ReadingPage from './pages/ReadingPage'
+import Library from './libraries/Library'
 import NewLibraryBook from './forms/NewLibraryBook';
-
+import Message from './pieces/Message'
+import useAxios from './hooks/useAxios';
 import {useState,useEffect} from 'react';
 import axios from 'axios';
+import themes from './data/themes';
+import {ThemeContext,MessageContext,UserContext} from './context/context';
 // import AddImageForm from '/.AddImageForm.js'
 import './css/App.css';
 import './fonts.css';
 
-
-
 function App() {
 
+  const changeTheme=(idx)=>{
+    setTheme({...themes[idx],changeTheme});
+  }
 
   const navigate = useNavigate();
-  const [currentUser,setUser]= useState(null);
   const [message, setMessage]= useState(null);
-
-
+  const [reqUser,currentUser,setUser]= useAxios(null);
+  const [theme,setTheme]= useState({...themes[0],changeTheme});
 
   useEffect(()=>{
-  const getLoggedInUser = async()=>{
-    const res = await axios.get('/logged-in-user');
-    if(res.data.username){
-      setUser(res.data);
+     reqUser('get','/logged-in-user','user');
+    if (localStorage.theme !== undefined) {
+      changeTheme(JSON.parse(localStorage.theme));
     }
-    else{
-      setUser(null);
-    }
-
-  }
-  getLoggedInUser();
   },[])
 
 
 
-const signUp = async(data)=>{
-  let res = await axios.post('/register',{...data,is_pro_user: true});
-  console.log(res);
-  navigate(`/`);
+
+const signIn = async(data,url,msg)=>{
+  let res = await reqUser('post',url,'user',data);
+  if(res.data){
+    setMessage((n)=> n={text:`${msg} ${res.data.username}`,color:'green'});
+    navigate(`/`);
+  }
+  else if(res.message){
+      setMessage((n)=> n={text: res.message,color:'orange'});
+  }
 }
 
-const login = async(data)=>{
-  let res = await axios.post('/login',data);
-  console.log(res);
-  setUser(res.data);
-  navigate(`/`);
-}
 
 const newBook=async(data)=>{
-  let res = await axios.post(`/users/${currentUser.username}/books/create`,{...data,is_public:true,username:currentUser.username});
-  console.log(res);
+  let res = await axios.post(`/users/${currentUser.username}/books/create`,{...data,username:currentUser.username});
+  // console.log(res);
+  if(res.data){
+    navigate(`/write/book/${res.data.id}`);
+  }
+}
+
+const editBook=async(data,bookId)=>{
+  let res = await axios.patch(`/users/${currentUser.username}/books/${bookId}`,{...data});
+  // console.log(res);
   if(res.data){
     navigate(`/write/book/${res.data.id}`);
   }
@@ -72,7 +77,15 @@ const newBook=async(data)=>{
 
 const newLibrary=async(data)=>{
   let res = await axios.post(`/users/${currentUser.username}/libraries`,data);
-  console.log(res);
+  // console.log(res);
+  if(res.data){
+    navigate(`/library/${res.data.id}`);
+  }
+}
+
+const editLibrary=async(data,libraryId)=>{
+  let res = await axios.patch(`/libraries/${libraryId}`,data);
+  // console.log(res);
   if(res.data){
     navigate(`/library/${res.data.id}`);
   }
@@ -81,40 +94,53 @@ const newLibrary=async(data)=>{
 const logOut = async(event)=>{
   event.preventDefault();
   const res = await axios.get('/logout');
-  console.log(res);
   setUser(null);
   navigate(`/`);
 }
 
+
+const removeMessage=()=>{
+  setMessage(null);
+}
+
   return (
     <>
+  <UserContext.Provider value={currentUser}>
+    <ThemeContext.Provider value={theme}>
+    <MessageContext.Provider value={{message, setMessage}}>
+    <div style={{backgroundColor:theme.backgroundColor} } className="BackgroundPage"/>
       <NavBar logOut={logOut}/>
+      {message? <Message text={message.text} color={message.color} handleClick={removeMessage}/>:null}
       <Routes>
-          <Route exact="true" path='/' element={<HomePage currentUser={currentUser}/>}/>
-          <Route exact="true" path='/login' element={<LoginForm login={login}/>}/>
-          <Route exact="true" path='/signUp' element={<SignUpForm signUp={signUp}/>}/>
+          <Route exact="true" path='/' element={<HomePage/>}/>
+          <Route exact="true" path='/login' element={<LoginForm login={(data)=>signIn(data,'/login','Welcome back')}/>}/>
+          <Route exact="true" path='/signUp' element={<SignUpForm signUp={(data)=>signIn(data,'/register','Welcome')}/>}/>
 
           <Route exact="true" path='/search/books' element={<Search/>}/>
           <Route exact="true" path='/search/libraries' element={<Search searchFor={1}/>}/>
           <Route exact="true" path='/explore' element={<Search searchFor={2}/>}/>
+          <Route exact="true" path='/search/users' element={<Search searchFor={3}/>}/>
 
           <Route exact="true" path='/user/:username' element={<UserPage/>}/>
           <Route exact="true" path='/user/:username/libraries' element={<UserLibraries/>}/>
+          <Route exact="true" path='/user/:username/books' element={<UserBooks/>}/>
 
           <Route exact="true" path='/library/:id' element={<Library/>}/>
           <Route exact="true" path='/new/library' element={<NewLibraryForm addLibrary={newLibrary}/>}/>
-
-          <Route exact="true" path='/new/library_book/:id' element={<NewLibraryBook/>}/>
+          <Route exact="true" path='/edit/library/:id' element={<NewLibraryForm addLibrary={editLibrary}/>}/>
 
           <Route exact="true" path='/new/book' element={<NewBookForm addBook={newBook}/>}/>
+          <Route exact="true" path='/edit/book/:id' element={<NewBookForm addBook={editBook}/>}/>
           <Route exact="true" path='/book/:id' element={<ReadingPage/>}/>
           <Route exact="true" path='/write/book/:id' element={<WritingPage/>}/>
-
           <Route exact="true" path='/settings' element={<Settings/>}/>
           <Route exact="true" path='/user/settings' element={<UserSettingsForm/>}/>
 
           <Route path="*" element={<PageNotFound/>} />
       </Routes>
+      </MessageContext.Provider>
+      </ThemeContext.Provider>
+      </UserContext.Provider>
   </>
   );
 }

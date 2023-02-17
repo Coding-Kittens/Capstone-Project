@@ -1,7 +1,6 @@
 import {useState} from 'react';
 
 const useFields =(initState)=>{
-
 const [state,setState] = useState(initState);
 
 const handleChange =(event)=>{
@@ -17,6 +16,6 @@ const resetState =()=>{
   setState(initState);
 }
 
-return [state,handleChange,resetState];
+return [state,handleChange,resetState,setState];
 }
 export default useFields;

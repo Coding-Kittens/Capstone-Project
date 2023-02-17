@@ -3,18 +3,18 @@ from flask import Flask, redirect, render_template, request,flash,session ,jsoni
 from models import Image,User,Library,Book,Page,Note,Character,Place,BookMark,BookPlace,BookCharacter,LibraryBook,connect_db,db
 from werkzeug.utils import secure_filename
 from flask_cors import CORS,cross_origin
+# from flask.ext.session import Session
+from flask_session import Session
 import uuid as uuid
 import base64
 import os
 
 app = Flask(__name__,static_folder='build',static_url_path='')
 CORS(app)
-@cross_origin()
+@cross_origin(supports_credentials=True)
 
 def serve():
     return send_from_directory(app.static_folder,'index.html')
-
-
 
 uri = os.environ.get('DATABASE_URL',"postgresql:///library_db")
 if uri.startswith("postgres://"):
@@ -24,22 +24,29 @@ app.config["SQLALCHEMY_DATABASE_URI"] = uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "catsarethebest"
+app.config['SESSION_TYPE'] = 'sqlalchemy'
 
 
-#
 # UPLOAD_FOLDER = 'static/images/'
 # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 connect_db(app)
 db.create_all()
 
+app.config['SESSION_SQLALCHEMY'] = db
+ses = Session(app)
 
+ses.app.session_interface.db.create_all()
 ##################################### Users #################################
 
 ############################################################ get current user
 @app.route("/logged-in-user", methods=["GET"])
 def logged_in_user():
     """Returns current user"""
+    print('-------------------------logged in')
+    print(session)
+    print(session.get("username",'no user'))
+    print('-------------------------')
     if "username" in session:
         user = User.query.get_or_404(session["username"])
         # image = None
@@ -60,15 +67,17 @@ def register_user():
         new_user = User.register(
                 username=data['username'],
                 password=data['password'],
-                is_pro_user=data['is_pro_user'],
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 )
-        session["username"] = new_user.username
+        session["username"] = data.get('username')
+        session.modified = True
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
+        print('-------------------')
         print(e)
+        print('-------------------')
         return jsonify({'message': 'Username already taken, please pick another one.'})
     return jsonify({'user': new_user.serialize()});
 
@@ -89,6 +98,11 @@ def login_user():
     current_user = User.authenticate(data['username'], data['password'])
     if current_user:
         session["username"] = current_user.username
+        session.modified = True
+        print('-------------------------login')
+        print(session)
+        print(session.get("username",'no user'))
+        print('-------------------------')
         return jsonify({'user': current_user.serialize()})
     else:
         return jsonify({'message': 'Invalid username or password, please try again.'})
@@ -99,35 +113,30 @@ def login_user():
 @app.route("/logout", methods=["GET"])
 def logout_user():
     """Logs out current user"""
+    print('------------------------')
+    print('logged out')
+    print('------------------------')
     session.pop("username")
+    session.modified = True
     return jsonify("logged out!")
 
-####################################################### Get all users-- temp
+####################################################### Get users
 
 @app.route("/users", methods=["GET"])
 def users_page():
-    """Shows all users for testing"""
-    res = User.query.all();
-
-    users = [ {
-    'username': u.username,
-    'is_pro_user': u.is_pro_user,
-    'first_name':u.first_name,
-    'last_name':u.last_name,
-    } for u in res]
-
-    return jsonify(users)
+    """gets all users"""
+    users = User.query.all();
+    return jsonify({'users':[user.serialize() for user in users]})
 
 
 ####################################################### Get user ################
 
 @app.route("/users/<username>", methods=["GET"])
 def get_user(username):
-    """Shows the user page to logged in users"""
-    if "username" in session and session["username"] == username:
-        current_user = User.query.get_or_404(username)
-        return jsonify({'user': current_user.serialize()})
-    return jsonify({'message':'Unauthorized!'})
+    """gets a user"""
+    user = User.query.get_or_404(username)
+    return jsonify({'user': user.serialize()})
+
 
 ####################################################### delete user ##############################
 
@@ -137,6 +146,7 @@ def delete_user(username):
     if "username" in session and session["username"] == username:
         current_user = User.query.get_or_404(username)
         session.pop("username")
+        session.modified = True
         current_user.feedback = []
         User.query.filter_by(username=username).delete()
         db.session.commit()
@@ -225,19 +235,31 @@ def delete_user(username):
 @app.route("/libraries/public/<int:off_set>",methods =['GET'])
 def get_public_libraries(off_set):
     """gets 20 public libraries"""
-    libraries = Library.query.filter(Library.id >= off_set, Library.id < off_set+20).all()
-    return jsonify([library.serialize() for library in libraries])
+    libraries = Library.query.filter(Library.id >= off_set, Library.id < off_set+20,Library.is_public==True).all()
+    return jsonify({'libraries':[library.serialize() for library in libraries]})
 
 
 ####################################################### get all user libraries
 @app.route("/users/<username>/libraries/",methods =['GET'])
 def get_user_libraries(username):
     """gets all of the current users libraries or all the public libraries of another user"""
-    if "username" in session and session["username"] == username:
-        libraries = Library.query.filter_by(username=username).all()
-    else:
-        libraries = Library.query.filter_by(username=username,is_public=True).all()
-    return jsonify([library.serialize() for library in libraries])
+    print('-------------------------user libraries')
+    print('session:',session)
+    print('session user:',session.get("username",'no user'))
+    print('username:',username)
+    # breakpoint()
+    print('-------------------------')
+    libraries = []
+    try:
+        if "username" in session and session["username"] == username:
+            libraries = Library.query.filter_by(username=username).all()
+        else:
+            libraries = Library.query.filter_by(username=username,is_public=True).all()
+    except Exception as e:
+        print('-------------------------user libraries error')
+        print('error:',e)
+        print('-------------------------')
+    return jsonify({'libraries':[library.serialize() for library in libraries]})
 
 ####################################################### get library
 @app.route("/libraries/<int:library_id>",methods =['GET'])
@@ -274,24 +296,56 @@ def add_library(username):
             db.session.commit()
             return jsonify(library.serialize())
         except Exception as e:
-            return jsonify({'Error':e})
+            print('-------------------')
+            print(e)
+            print('-------------------')
+            return jsonify({'message':'error'})
     return jsonify({'message':'Unauthorized!'})
 
 ####################################################### new library book
 
-@app.route("/books/<int:book_id>/libraries/<int:library_id>",methods =['POST'])
-def make_library_book(book_id,library_id):
+@app.route("/users/<username>/libraries/books",methods =['POST'])
+def make_library_book(username):
     """adds a book to a library"""
+    print('-------------------------new library book------------')
+    print('session:',session)
+    print('session user:',session.get("username",'no user'))
+    print('username:',username)
+    print('-------------------------')
+    if "username" in session and session["username"] == username:
+        try:
+            data = request.get_json()
+            libraries=data.get('libraries')
+            books=data.get('books')
+            for library_id in libraries:
+                for book_id in books:
+                    library_book = LibraryBook(book_id=book_id,library_id=library_id);
+                    db.session.add(library_book)
+            db.session.commit()
+            return jsonify({'message':'Added to Library'}), 201
+        except Exception as e:
+            return jsonify({'message':'Already added to library!'}),400
+    return jsonify({'message':'Unauthorized!'}), 401
+
+
+
+####################################################### delete library book
+
+@app.route("/libraries/<int:library_id>/books/<int:book_id>",methods =['DELETE'])
+def delete_library_book(library_id,book_id):
+    """deletes a book to a library"""
+    print('-------------------------delete library book------------')
+    print('session:',session)
+    print('session user:',session.get("username",'no user'))
+    print('-------------------------')
     if "username" in session:
         library = Library.query.get_or_404(library_id)
         if session["username"] == library.username:
-            data = request.get_json()
-            library_book = LibraryBook(book_id=book_id,library_id=library_id);
-            db.session.add(library_book)
+            library_book = LibraryBook.query.filter_by(book_id=book_id,library_id=library_id).one();
+            db.session.delete(library_book)
             db.session.commit()
-            return jsonify({'message':'Added book to library'}), 201
+            return jsonify({'message':'Deleted!'})
     return jsonify({'message':'Unauthorized!'}), 401
-
 
 ####################################################### edit library
 
@@ -315,11 +369,13 @@ def edit_library(library_id):
 @app.route("/libraries/<int:library_id>",methods =['DELETE'])
 def delete_library(library_id):
     """deletes a library"""
-    if "username" in session and session["username"] == username:
-        Library.query.get_or_404(library_id).delete()
-        db.session.commit()
-        return jsonify({'message':'Deleted!'})
-    return jsonify({'message':'Unauthorized!'})
+    if "username" in session:
+        library = Library.query.get_or_404(library_id)
+        if session["username"] == library.username:
+             db.session.delete(library)
+             db.session.commit()
+             return jsonify({'message':'Deleted!'})
+    return jsonify({'message':'Unauthorized!'}), 401
 
 
 
@@ -331,20 +387,27 @@ def delete_library(library_id):
 def get_all_books():
     """gets all public books"""
     books = Book.query.filter_by(is_public=True).all()
-    return jsonify([book.serialize() for book in books])
+    return jsonify({'books':[book.serialize() for book in books]})
 
 
 ####################################################### get all user books
 @app.route("/users/<username>/books",methods =['GET'])
 def get_user_books(username):
     """gets all of a users books if the user is not the one signed in it gets all the public books from the user"""
+    print('-------------------------user books')
+    print('request:',request.get_json())
+    print('session:',session)
+    print('session user:',session.get("username",'no user'))
+    print('username:',username)
+    print('-------------------------')
     books = []
+    session["book"] = 'newbook';
     if "username" in session and session["username"] == username:
         books = Book.query.filter_by(username=username).all()
 
     else:
         books = Book.query.filter_by(is_public=True,username=username).all()
-    return jsonify([book.serialize() for book in books])
+    return jsonify({'books':[book.serialize() for book in books]})
 
 
 
@@ -372,7 +435,10 @@ def make_book(username):
             db.session.commit()
             return jsonify(book.serialize())
         except Exception as e:
-            return jsonify({'Error':e}),500
+            print('-------------------------new book error------------')
+            print(e)
+            print('-------------------------')
+            return jsonify({'message':'error'}),500
     return jsonify({'message':'Unauthorized!'}),401
 
 
@@ -402,7 +468,8 @@ def edit_book(username,book_id):
 def delete_book(username,book_id):
     """deletes a book"""
     if "username" in session and session["username"] == username:
-        Book.query.get_or_404(book_id).delete()
+        book = Book.query.get_or_404(book_id);
+        db.session.delete(book)
         db.session.commit()
         return jsonify({'message':'Deleted!'})
     return jsonify({'message':'Unauthorized!'})
@@ -411,7 +478,7 @@ def delete_book(username,book_id):
 
 
 ####################################################### get all pages for book
-@app.route("/books/<int:book_id>/pages",methods =['GET'])
+@app.route("/books/<int:book_id>/pages/all",methods =['GET'])
 def get_book_pages(book_id):
     """gets all the ids and page numbers for the pages in a book"""
     if "username" in session:
@@ -422,14 +489,45 @@ def get_book_pages(book_id):
     return jsonify({'message':'Unauthorized!'}), 401
 
 ####################################################### get page
-@app.route("/books/<int:book_id>/pages/<int:page_id>",methods =['GET'])
-def get_pages(book_id,page_id):
+@app.route("/books/<int:book_id>/pages/<int:page_num>",methods =['GET'])
+def get_page(book_id,page_num):
     """ gets a page """
-    if "username" in session:
-        book = Book.query.get_or_404(book_id)
-        if book.is_public or session["username"] == book.username:
-            page = Page.query.get_or_404(page_id)
-            return jsonify({'page':page.serialize()})
+    try:
+        if "username" in session:
+            book = Book.query.get_or_404(book_id)
+            if book.is_public or session["username"] == book.username:
+                # page = Page.query.get_or_404(page_id)
+                page = Page.query.filter_by(book_id=book_id,page_num=page_num).one();
+                return jsonify({'page':page.serialize()})
+    except Exception as e:
+        print('-------------------------get page error------------')
+        print(e)
+        print('-------------------------')
+        return jsonify({'message':'Page not found!'})
+    return jsonify({'message':'Unauthorized!'}), 401
+
+####################################################### get pages
+@app.route("/books/<int:book_id>/pages",methods =['GET'])
+def get_pages(book_id):
+    """ gets a page """
+    try:
+        if "username" in session:
+            book = Book.query.get_or_404(book_id)
+            if book.is_public or session["username"] == book.username:
+                page_nums = request.args.getlist('page_nums[]')
+                num_of_pages = len(page_nums)
+                pages =[]
+                i=0
+                while i < num_of_pages:
+                    page = Page.query.filter_by(book_id=book_id,page_num=page_nums[i]).one();
+                    pages.append(page)
+                    i+=1
+                return jsonify({'pages':[page.serialize() for page in pages]})
+    except Exception as e:
+        print('-------------------------get pages error------------')
+        print(e)
+        print('-------------------------')
+        return jsonify({'message':'Page not found!'})
     return jsonify({'message':'Unauthorized!'}), 401
 
 
@@ -443,7 +541,7 @@ def add_page(book_id):
         if session["username"] == book.username:
             data = request.get_json()
             num_of_pages = data.get('num_of_pages')
-            page_num =data.get('page_num')
+            page_num = len(book.pages)+1
             pages =[]
             while num_of_pages > 0:
                 page = Page(page_num=page_num,book_id=book_id,text='',title='')
@@ -458,21 +556,30 @@ def add_page(book_id):
 
 
 ####################################################### edit page
-@app.route("/books/<int:book_id>/pages/<int:page_id>",methods =['PATCH'])
-def edit_page(book_id,page_id):
+@app.route("/books/<int:book_id>/pages/<int:page_num>",methods =['PATCH'])
+def edit_page(book_id,page_num):
     """edits a book"""
+    print('-------------------------get pages patch------------')
+    print('-------------------------')
+    try:
+        if "username" in session:
+            book = Book.query.get_or_404(book_id);
+            if session["username"] == book.username:
+                data = request.get_json()
+                page = Page.query.filter_by(book_id=book_id,page_num=page_num).one();
+                # page = Page.query.get_or_404(page_id);
+                page.title = data.get('title',page.title)
+                page.text = data.get('text',page.text)
+                page.image = data.get('image',page.image)
+                db.session.add(page)
+                db.session.commit()
+                return jsonify({'page':page.serialize()})
+    except Exception as e:
+        print('-------------------------get pages error------------')
+        print(e)
+        print('-------------------------')
+        return jsonify({'message':'Page not found!'})
 
-    if "username" in session:
-        book = Book.query.get_or_404(book_id);
-        if session["username"] == book.username:
-            data = request.get_json()
-            page = Page.query.get_or_404(page_id);
-            page.title = data.get('title',page.title)
-            page.text = data.get('text',page.text)
-            page.image = data.get('image',page.image)
-            db.session.add(page)
-            db.session.commit()
-            return jsonify(page.serialize())
     return jsonify({'message':'Unauthorized!'}), 401
 
 
@@ -705,7 +812,8 @@ def get_bookmarks(book_id):
     if "username" in session:
         book = Book.query.get_or_404(book_id)
         if session["username"] == book.username:
-            return jsonify([bookmark.serialize() for bookmark in  book.bookmarks])
+            bookmarks =BookMark.query.filter_by(book_id=book_id).all()
+            return jsonify({'bookmarks':[bookmark.serialize() for bookmark in bookmarks]})
     return jsonify({'message':'Unauthorized!'})
 
 ####################################################### get bookmark
@@ -715,28 +823,31 @@ def get_bookmark(book_id,page_id):
     if "username" in session:
         book = Book.query.get_or_404(book_id)
         if book.is_public or session["username"] == book.username:
-            bookmark = Bookmark.query.filter_by(book_id=book_id,page_id=page_id).one()
-            return jsonify(bookmark.serialize());
+            bookmark = BookMark.query.filter_by(book_id=book_id,page_id=page_id).one()
+            return jsonify({'bookmark':bookmark.serialize()});
     return jsonify({'message':'Unauthorized!'})
 
 
 ####################################################### new bookmark
 
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['POST'])
-def add_bookmark(book_id):
+def add_bookmark(book_id,page_id):
     """makes a new bookmark"""
     book = Book.query.get_or_404(book_id)
     if "username" in session and session["username"] == book.username:
         data = request.get_json()
-        bookmark = Bookmark(book_id=book_id,page_id=page_id,text=data.get('text'))
+        print('-----------------------new bookmark')
+        print(data)
+        print('-----------------------new bookmark')
+        bookmark = BookMark(book_id=book_id,page_id=page_id,text=data.get('text'))
         db.session.add(bookmark)
         db.session.commit()
-        return jsonify(bookmark.serialize())
+        return jsonify({'bookmark':bookmark.serialize()})
     return jsonify({'message':'Unauthorized!'})
 
 
 
-####################################################### edit page
+####################################################### edit bookmark
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['PATCH'])
 def edit_bookmark(book_id,page_id):
     """edits a bookmark"""
@@ -745,15 +856,15 @@ def edit_bookmark(book_id,page_id):
         book = Book.query.get_or_404(book_id);
         if session["username"] == book.username:
             data = request.get_json()
-            bookmark = Bookmark.query.filter_by(book_id=book_id,page_id=page_id).one()
+            bookmark = BookMark.query.filter_by(book_id=book_id,page_id=page_id).one()
             bookmark.text = data.get('text',bookmark.text)
             db.session.add(bookmark)
             db.session.commit()
-            return jsonify(bookmark.serialize())
+            return jsonify({'bookmark':bookmark.serialize()})
     return jsonify({'message':'Unauthorized!'})
 
 
-####################################################### delete page
+####################################################### delete bookmark
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['DELETE'])
 def delete_bookmark(book_id,page_id):
     """deletes a bookmark"""
@@ -761,7 +872,7 @@ def delete_bookmark(book_id,page_id):
     if "username" in session:
         book = Book.query.get_or_404(book_id);
         if session["username"] == book.username:
-            Bookmark.query.filter_by(book_id=book_id,page_id=page_id).delete()
+            BookMark.query.filter_by(book_id=book_id,page_id=page_id).delete()
             db.session.commit()
             return jsonify({'message':'Deleted!'})
     return jsonify({'message':'Unauthorized!'});
@@ -777,7 +888,7 @@ def get_book_place(book_id):
     if "username" in session:
         book = Book.query.get_or_404(book_id)
         if session["username"] == book.username:
-            return jsonify([place.serialize() for place in  book.places])
+            return jsonify({'places':[place.serialize() for place in  book.places]})
     return jsonify({'message':'Unauthorized!'})
 
 ####################################################### get place
@@ -788,7 +899,7 @@ def get_place(book_id,place_id):
         book = Book.query.get_or_404(book_id)
         place = Place.query.get_or_404(place_id)
         if place.is_public or session["username"] == book.username:
-            return jsonify(place.serialize());
+            return jsonify({'place':place.serialize()});
     return jsonify({'message':'Unauthorized!'})
 
 
@@ -805,7 +916,7 @@ def new_place(book_id):
         db.session.add(place)
         db.session.add(book_place)
         db.session.commit()
-        return jsonify(place.serialize())
+        return jsonify({'place':place.serialize()})
     return jsonify({'message':'Unauthorized!'})
 
 ####################################################### new book place
@@ -839,7 +950,7 @@ def edit_place(book_id,place_id):
             place.image = data.get('image',place.image)
             db.session.add(place)
             db.session.commit()
-            return jsonify(place.serialize())
+            return jsonify({'place':place.serialize()})
     return jsonify({'message':'Unauthorized!'})
 
 

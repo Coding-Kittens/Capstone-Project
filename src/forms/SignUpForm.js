@@ -1,5 +1,5 @@
 import useFields from '../hooks/useFields';
-import './SignUpForm.css'
+import '../css/SignUpForm.css'
 const SignUpForm =({signUp})=>{
 
   const initData ={

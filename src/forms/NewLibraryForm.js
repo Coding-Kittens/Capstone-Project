@@ -1,7 +1,7 @@
 import useFields from '../hooks/useFields';
-
+import { useParams } from "react-router-dom";
 const NewLibraryForm =({addLibrary})=>{
-
+const { id } = useParams();
   const initData ={
 name: '',
 description:'',
@@ -13,7 +13,7 @@ const[formData,handleChange,resetFormData] = useFields(initData);
 
 const handleSubmit=(event)=>{
   event.preventDefault();
-  addLibrary(formData);
+  addLibrary(formData,id);
   resetFormData();
 }
 
