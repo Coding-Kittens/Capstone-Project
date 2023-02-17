@@ -1,6 +1,5 @@
 import Book from '../books/Book';
 import NoteBook from '../notes/NoteBook';
-import ImageBtn from '../pieces/ImageBtn';
 import CharacterBook from '../notes/CharacterBook';
 import PlaceBook from '../notes/PlaceBook'
 import '../css/WritingPage.css';
@@ -36,7 +35,7 @@ const [isChars,toggleIsChars] = useToggle(false);
 
   return <>
   {
-    isOpen? <Book bookId={id} areReading={false}/> :<ImageBtn nameClass='WritingPage_closedBook' image={closedBook} handleClick={toggleIsOpen}/>
+    isOpen? <Book bookId={id} areReading={false}/> :<img className ='WritingPage_closedBook' src={closedBook} alt="closedBook" onClick={toggleIsOpen}/>
   }
 {
   book?
