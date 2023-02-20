@@ -4,3 +4,11 @@
   left: 34%;
   top: 15%;
 }
+
+.WritingPage_charBook,.WritingPage_placeBook,.WritingPage_noteBook{
+  position: relative;
+  font-size: .47em;
+  left: .5%;
+  top: -597px;
+  z-index: 5;
+}

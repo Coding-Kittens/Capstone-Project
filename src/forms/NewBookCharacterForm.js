@@ -1,7 +1,8 @@
-
 import useFields from '../hooks/useFields';
 import {useState,useEffect} from 'react';
 import axios from 'axios';
+
+
 const NewBookCharacterForm =({addChar,username})=>{
 
   const [chars,setChars]= useState(null);
@@ -40,7 +41,7 @@ const handleSubmit=(event)=>{
   resetFormData();
 }
 
-return <form className="LoginForm"  onSubmit={handleSubmit}>
+return <form className="Form"  onSubmit={handleSubmit}>
 {chars? chars.map(char => <label key={char.id} >{char.name}<input type="checkBox" name={char.id} value={formData[char.id]} onChange={handleChange}/></label>):<h2>No characters to add!</h2>}
   <button type="submit" name="button">Save</button>
 </form>

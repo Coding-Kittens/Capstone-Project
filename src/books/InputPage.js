@@ -31,17 +31,17 @@ const handleClick=(num)=>{
 return <div className ='InputPage'>
 {page?
   <>
-  <textarea  name="text" rows="27" cols="33" value={inputPage.text} onChange={handleChange}></textarea>
-  {isTwoPages? <textarea  name="text2" rows="27" cols="33" value={inputPage.text2} onChange={handleChange}></textarea>:null}
-  <p>{page[0].page_num}</p>
-  {isTwoPages? <p>{page[1].page_num}</p>:null}
+  <textarea  name="text" rows="23" cols="36" maxLength='997' value={inputPage.text} onChange={handleChange}></textarea>
+  {isTwoPages? <textarea  name="text2" rows="23" cols="33" maxLength='905' value={inputPage.text2} onChange={handleChange}></textarea>:null}
+  <p className="pg1">{page[0].page_num}</p>
+  {isTwoPages? <p className="pg2">{page[1].page_num}</p>:null}
 
   <div className ='ChangePageBack' onClick ={()=>handleClick(-2)}></div>
   <div className ='ChangePageNext' onClick ={()=>handleClick(2)}></div>
 </>
 :null}
 
-<button type="button" onClick={()=>savePage(inputPage)} name="button">Save</button>
+<button className="InputPage_Save" type="button" onClick={()=>savePage(inputPage)} >Save</button>
 </div>
 }
 export default InputPage;

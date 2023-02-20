@@ -6,48 +6,85 @@ import bookShelfImg from '../sprites/Librarybutton1.png';
 import tempImg from '../sprites/painting.png';
 import newBook from '../sprites/NewBook.png';
 import ink from '../sprites/ink2.png';
-import axios from 'axios';
+
+import useAxios from '../hooks/useAxios';
+import useToggle from '../hooks/useToggle';
+import PopUpForm from '../forms/PopUpForm';
+
+
 import '../css/UserPage.css';
 import { UserContext } from "../context/context";
 const UserPage =()=>{
   const currentUser = useContext(UserContext);
   const { username } = useParams();
 
-  const [user,setUser]= useState();
+  // const [user,setUser]= useState();
+  const [reqUser,user,setUser]= useAxios(null);
+const[editForm,toggleEdit,setEditForm] = useToggle(false);
+
 
   useEffect(()=>{
   const getUser = async()=>{
-    const res = await axios.get(`/users/${username}`);
-    // console.log(res);
-    if(res.data.user){
-      setUser(res.data.user);
-    }
-    else{
-      setUser(null);
-    }
+    reqUser('get',`/users/${username}`,'user')
+    // const res = await axios.get(`/users/${username}`);
+    // // console.log(res);
+    // if(res.data.user){
+    //   setUser(res.data.user);
+    // }
+    // else{
+    //   setUser(null);
+    // }
 
   }
   getUser();
   },[])
 
 
+const editUser = async(data)=>{
+const res = await reqUser('patch',`/users/${username}`,'user',data);
+console.log(res);
+setEditForm(false);
+}
 
 
-return <>{user? <div className="UserPage">
+
+return <>
+{user&&currentUser? <div className="UserPage">
  <img id="BookImg" src={bookImg} alt="book"/>
-<div className="UserPage_1">
-  <h1>Autobiography</h1>
-  <h2>Username: {username}</h2>
-  <h2>Full Name: {user.name}</h2>
-  {user.bio?
-    <p>{user.bio}</p>:
-    <p>{currentUser.username === username? 'No bio! Click on the ink and quil, to edit your Autobiography.':null}</p>
-  }
-</div>
+
+
+ <div className="UserPage_1">
+   <h1>Autobiography</h1>
+   <h2>Username: {username}</h2>
+   {editForm ? (
+     <PopUpForm
+       submit={editUser}
+       inputs={[
+         { title: "First name", name: "first_name" },
+         { title: "Last name", name: "last_name" },
+         { title: "Bio", name: "bio" },
+       ]}
+       initData={{
+         first_name: user.first_name,
+         last_name: user.last_name,
+         bio: user.bio? user.bio:'',
+       }}
+       submitText="Save"
+     />
+   ) : <><h2>Full Name: {user.name}</h2>
+    {user.bio?
+      <p>{user.bio}</p>:
+      <p>{currentUser.username === username? 'No bio! Click on the ink and quil, to edit your Autobiography.':null}</p>
+    }</>
+   }
+ </div>
+
+
+
 
 <div className="UserPage_2">
 <img id="profileImg" src={tempImg} alt="profile pic"/>
-{currentUser.username === username? <img id="ink" src={ink} alt="ink"/>:null}
+{currentUser.username === username? <img  onClick={toggleEdit} id="ink" src={ink} alt="ink"/>:null}
 </div>
 
 {currentUser.username === username?

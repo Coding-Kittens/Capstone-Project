@@ -1,5 +1,5 @@
 import useFields from '../hooks/useFields';
-import '../css/LoginForm.css'
+import '../css/Form.css'
 const LoginForm =({login})=>{
 
   const initData ={
@@ -16,9 +16,9 @@ const handleSubmit=(event)=>{
 }
 
 
-return <form className="LoginForm" onSubmit={handleSubmit}>
-<label>Username<input type="text" name="username" value={formData.username} onChange={handleChange}/></label>
-<label>Password<input type="text" name="password" value={formData.password} onChange={handleChange}/></label>
+return <form className="Form" onSubmit={handleSubmit}>
+<label>Username<input required type="text" name="username" value={formData.username} onChange={handleChange}/></label>
+<label>Password<input required type="text" name="password" value={formData.password} onChange={handleChange}/></label>
   <button type="submit" name="button">Log In</button>
 </form>
 

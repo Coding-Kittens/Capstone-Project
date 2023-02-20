@@ -1,37 +1,50 @@
-import {useContext} from 'react';
+import ThemeForm from '../forms/ThemeForm';
+import ChangePasswordform from '../forms/ChangePasswordform';
+import PopUpForm from '../forms/PopUpForm';
+import {useState,useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {ThemeContext} from '../context/context';
-import useFields from '../hooks/useFields';
-import themes from '../data/themes';
-const Settings =()=>{
-  const theme = useContext(ThemeContext);
+import { UserContext, MessageContext } from "../context/context";
+import useAxios from '../hooks/useAxios';
+import '../css/Settings.css';
+
+const Settings =({deleteUser})=>{
+  const currentUser = useContext(UserContext);
+  const {message,setMessage} = useContext(MessageContext);
+const [deleteForm,setDeleteForm]=useState(false);
   const navigate = useNavigate();
-    const initData ={
-  theme: 0,
-    }
 
+const [reqUser,user] = useAxios(currentUser);
 
-    const[formData,handleChange,resetFormData] = useFields(initData);
-
-const changeTheme=(event)=>{
-  handleChange(event);
-  theme['changeTheme'](event.target.value);
+const changePassword =(data)=>{
+  reqUser('patch',`/users/${currentUser.username}/change_password`,'user',data);
 }
 
+const showDeleteForm=()=>{
+  setDeleteForm(true);
+  setMessage({text: 'Are you sure you want to delete your account all of your information like, books, libraries, characters, notes, extra… will be deleted. Make sure you have a copy of the information you want to keep first!',color:'#BF504A'});
+}
 
-    const handleSubmit=(event)=>{
-      event.preventDefault();
-      theme['changeTheme'](formData.theme);
-      localStorage.setItem('theme',JSON.stringify(formData.theme));
-      resetFormData();
-      navigate('/');
-    }
+  return <div className="Settings">
+  <ThemeForm/>
+  <ChangePasswordform changePassword={changePassword}/>
 
-  return <form className="LoginForm" onSubmit={handleSubmit}>
-  <label>Light<input type="radio" name="theme" value={0} onChange={changeTheme}/></label>
-  <label>Dark<input type="radio" name="theme" value={1} onChange={changeTheme}/></label>
-    <button type="submit" name="button">Save</button>
-  </form>
+  <button className="DeleteForm" type="button" onClick={showDeleteForm} >Delete Account</button>
+
+  {deleteForm?
+    <PopUpForm
+    closeForm={()=>setDeleteForm(false)}
+      submit={deleteUser}
+      inputs={[
+        { title: "Password", name: "password" },
+      ]}
+      initData={{
+        password: '',
+      }}
+      submitText="Im sure, Delete Account!"
+    />:null
+  }
+
+  </div>
 
 }
 export default Settings;

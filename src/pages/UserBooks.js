@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import useAxios from "../hooks/useAxios";
-import axios from "axios";
 import LibraryBook from '../libraries/LibraryBook';
 import Card from "../pieces/Card";
 import { UserContext } from "../context/context";
@@ -27,14 +26,14 @@ const UserBooks = () => {
 
 
   return (
-    <>
+    <div className='ListPage'>
       <h1>{`${username}'s Books`}</h1>
       {books
         ? books.map((book) => (
             <LibraryBook book={book} deleteBook={deleteBook} btnText='X'/>
           ))
         : null}
-    </>
+    </div>
   );
 };
 export default UserBooks;

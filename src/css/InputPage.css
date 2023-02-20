@@ -1,31 +1,67 @@
 .InputPage{
   display: inline-block;
   position: relative;
-  left: 27%;
-  top: 190px;
+  left: 28%;
+  top: 30px;
   z-index: 3;
 }
 
 .InputPage textarea{
-  margin: 33px;
+  margin: 20px;
   background-color: rgba(255,255,255,0);
+  border-color: rgba(255,255,255,0);
+  font-family: serif;
+  font-size: .65em;
   z-index: 3;
+  resize: none;
+  overflow: hidden;
 }
 
+
 .ChangePageBack,.ChangePageNext{
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-size: contain;
   display: inline-block;
   position: absolute;
-  top: 90%;
-  background-color: blue;
-  width: 50px;
-  height: 50px;
+  top: 100%;
+  /* background-color: blue; */
+  width: 80px;
+  height: 80px;
   z-index: 4;
 }
 
 .ChangePageBack{
-  left: -2%;
+  background-image: url('../sprites/Arrow.png');
+  left: -4%;
 }
 
 .ChangePageNext{
-    left: 95%;
+  background-image: url('../sprites/ArrowFlip.png');
+    left: 94%;
+}
+
+.pg1,.pg2{
+  font-size: 2em;
+  pointer-events: none;
+  position: absolute;
+top: 80%;
+z-index: 5;
+}
+
+.pg1{
+  left: 1%;
+}
+
+.pg2{
+  left: 92%;
+}
+
+
+.InputPage_Save{
+  font-size: 1em;
+  z-index: 3;
+  position: absolute;
+  left: -24%;
+  top: 116%;
 }

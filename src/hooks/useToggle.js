@@ -7,7 +7,7 @@ const toggle = ()=>{
   setState(state => !state);
 }
 
-return [state,toggle];
+return [state,toggle,setState];
 
 }
 

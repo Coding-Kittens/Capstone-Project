@@ -1,0 +1,20 @@
+.LibraryBook{
+  cursor: pointer;
+  position: relative;
+  left: 33%;
+  top: 120px;
+  padding: 5px;
+  margin-top: 25px;
+text-align: center;
+  background-color: #837090;
+  border-radius: 10px;
+  width: 30%;
+}
+
+
+.LibraryBook button{
+  position: relative;
+  position: relative;
+  left: -1%;
+  top: -12px;
+}

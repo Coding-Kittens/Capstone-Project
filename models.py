@@ -32,9 +32,10 @@ class User(db.Model):
     bio=db.Column(db.Text)
     profile_image = db.Column(db.Text,db.ForeignKey('images.name'))
     pic =db.relationship('Image',backref='userProfile',foreign_keys=[profile_image])
-
+    libraries = db.relationship('Library',backref="user", cascade='all, delete, delete-orphan')
+    books = db.relationship('Book',backref="user", cascade='all, delete, delete-orphan')
     @classmethod
-    def register(cls, username, password,first_name, last_name, is_pro_user=False):
+    def register(cls, username, password,first_name, last_name):
         """registers a new user"""
         hashed_b = bcrypt.generate_password_hash(password)
 
@@ -62,10 +63,17 @@ class User(db.Model):
     def serialize(self):
         return {
                 "name": self.full_name(),
+                'first_name':self.first_name,
+                'last_name':self.last_name,
                 "bio": self.bio,
                 "username": self.username,
                 }
 
+    def changePassword(self, password):
+        """registers a new user"""
+        hashed_b = bcrypt.generate_password_hash(password)
+        hashed = hashed_b.decode("utf8")
+        self.password = hashed;
 
 class Library (db.Model):
     __tablename__ ='libraries'
@@ -75,8 +83,8 @@ class Library (db.Model):
     is_public = db.Column(db.Boolean,nullable = False,default = False)
     username = db.Column(db.String(20),db.ForeignKey('users.username',ondelete='cascade'),nullable = False)
     books = db.relationship('Book',secondary='library_books',backref='libraries')
-    user = db.relationship('User',backref='libraries')
 
+#backref='libraries'
     def serialize(self):
         return {"id": self.id,
                 "name": self.name,
@@ -99,8 +107,10 @@ class Book(db.Model):
     cover_image = db.Column(db.Text,db.ForeignKey('images.name'))
     theme = db.Column(db.Integer,nullable = False,default=0)
     pic =db.relationship('Image',backref='books')
-    user = db.relationship('User',backref='books')
-
+    pages =db.relationship('Page',backref="book", cascade='all, delete, delete-orphan')
+    notes =db.relationship('Note',backref="book", cascade='all, delete, delete-orphan')
+    bookmarks =db.relationship('BookMark',backref="book", cascade='all, delete, delete-orphan')
+#backref='books'
     def serialize(self):
         return {"id": self.id,
                 "title": self.title,
@@ -122,9 +132,10 @@ class Page(db.Model):
     text = db.Column(db.Text)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
     page_num = db.Column(db.Integer,nullable = False)
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='cascade'),nullable = False)
-    book =db.relationship('Book',backref='pages')
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),nullable = False)
     pic =db.relationship('Image',backref='pages')
+    bookmark =db.relationship('BookMark',backref="page", cascade='all, delete, delete-orphan')
+    #backref='pages'
     def serialize(self):
         return {"id": self.id,
                 "title": self.title,
@@ -141,9 +152,9 @@ class Note(db.Model):
     title = db.Column(db.Text,nullable = False)
     text = db.Column(db.Text,nullable = False)
     image = db.Column(db.Text,db.ForeignKey('images.name'))
-    book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),nullable = False)
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id'),nullable = False)
     order = db.Column(db.Integer)
-    book =db.relationship('Book',backref='notes')
+    #backref='notes'
     pic =db.relationship('Image',backref='notes')
     def serialize(self):
         return {"id": self.id,
@@ -204,8 +215,9 @@ class BookMark(db.Model):
     book_id = db.Column(db.Integer,db.ForeignKey('books.id',ondelete='CASCADE'),primary_key=True)
     page_id = db.Column(db.Integer,db.ForeignKey('pages.id',ondelete='CASCADE'),primary_key=True)
     text = db.Column(db.Text)
-    book =db.relationship('Book',backref='bookmarks')
-    page =db.relationship('Page',backref='bookmark')
+    #backref='bookmarks'
+    #backref='bookmark'
+
     def serialize(self):
         return {"book_id": self.book_id,
                 "page_id": self.page_id,

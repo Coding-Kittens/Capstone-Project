@@ -2,25 +2,19 @@ import PopUpForm from "../forms/PopUpForm";
 import { useState, useEffect } from "react";
 import useToggle from "../hooks/useToggle";
 import noteBook from "../sprites/notes1.png";
-import axios from "axios";
+import useAxios from "../hooks/useAxios";
 import "../css/CharacterBook.css";
 import NotePage from "./NotePage";
 
 const NoteBook = ({ bookId, username }) => {
-  const [notes, setNotes] = useState([]);
+  const [reqNotes,notes, setNotes] = useAxios([],true);
   const [currNote, setCurrNote] = useState(null);
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
   const [addExistingForm, setAddExistingForm] = useState(false);
 
   useEffect(() => {
-    const getNotes = async () => {
-      const res = await axios.get(`/books/${bookId}/notes`);
-      if (res.data.notes.length > 0) {
-        setNotes((n) => (n = res.data.notes));
-      }
-    };
-    getNotes();
+    reqNotes('get',`/books/${bookId}/notes`,'notes');
   }, []);
 
   const showContents = () => {
@@ -34,23 +28,19 @@ const NoteBook = ({ bookId, username }) => {
     setCurrNote(newNote);
   };
 
-  const addNote = async (data) => {
-    const res = await axios.post(`/books/${bookId}/notes`, data);
-    if (res.data.notes) {
-      setNotes((n) => (n = [...notes, res.data.notes]));
-    }
+  const addNote =(data) => {
+    reqNotes('post',`/books/${bookId}/notes`,'note',data);
   };
 
   const deleteNote = async (noteId) => {
-    const res = await axios.delete(`/books/${bookId}/notes/${noteId}`);
-    console.log(res);
-    if (res.data.message === "Deleted!") {
+    const res = await reqNotes('delete',`/books/${bookId}/notes/${noteId}`);
+    if (res.message  === "Deleted!") {
       if (currNote) {
         if (notes[currNote-1].id === noteId) {
           changeNote(-1);
         }
       }
-      let updatedNotes = notes.map((note) => {
+      let updatedNotes = notes.filter((note) => {
         if (note.id != noteId) return note;
       });
       if (!updatedNotes[0]) updatedNotes = [];
@@ -60,30 +50,24 @@ const NoteBook = ({ bookId, username }) => {
 
   const editNote = async (data) => {
     const noteId = notes[currNote-1].id;
-    const res = await axios.patch(`/notes/${noteId}`, data);
-    if (res.data.notes) {
-      setNotes(
-        (n) =>
-          (n = notes.map((note) => (note.id != noteId ? note : res.data.notes)))
-      );
-    }
+    reqNotes('patch',`/notes/${noteId}`,'note',data);
   };
 
   return (
     <>
       <img className="CharacterBook_Image" src={noteBook} alt="NoteBook" />
 
-      {editForm ? (
+      {currNote && editForm ? (
         <PopUpForm
           closeForm={() => setEditForm(false)}
           submit={editNote}
           inputs={[
-            { title: "title", name: "title" },
-            { title: "text", name: "text" },
+            { title: "Title", name: "title" },
+            { title: "Text", name: "text" },
           ]}
           initData={{
-            title: "",
-            text: "",
+            title: notes[currNote-1].title,
+            text: notes[currNote-1].text,
           }}
           submitText="Edit Note"
         />
@@ -125,8 +109,8 @@ const NoteBook = ({ bookId, username }) => {
           closeForm={() => setAddForm(false)}
           submit={addNote}
           inputs={[
-            { title: "title", name: "title" },
-            { title: "text", name: "text" },
+            { title: "Title", name: "title" },
+            { title: "Text", name: "text" },
           ]}
           initData={{
             title: "",

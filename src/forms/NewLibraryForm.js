@@ -17,8 +17,8 @@ const handleSubmit=(event)=>{
   resetFormData();
 }
 
-return <form className="LoginForm"  onSubmit={handleSubmit}>
-  <label>Name<input type="text" name="name" value={formData.name} onChange={handleChange}/></label>
+return <form className="Form"  onSubmit={handleSubmit}>
+  <label>Name<input required type="text" name="name" value={formData.name} onChange={handleChange}/></label>
   <label>Description<input type="text" name="description" value={formData.description} onChange={handleChange}/></label>
   <label>Public<input type="checkbox" name="is_public" value={formData.is_public} onChange={handleChange}/></label>
 

@@ -73,7 +73,6 @@ const useAxios=(initalVal,isList=false)=>{
 
     }
     else if(res.data.message){
-      console.log('message');
       if(res.status != 201 && res.status != 200)setState(initalVal);
       return res.data;
     }

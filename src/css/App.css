@@ -6,3 +6,15 @@ body{
   cursor: default;
 }
 /* #9D5639 */
+
+ol{
+  list-style: none
+}
+
+button{
+  cursor: pointer;
+}
+
+h1,h2,h3,h4,h5{
+  font-weight: normal;
+}

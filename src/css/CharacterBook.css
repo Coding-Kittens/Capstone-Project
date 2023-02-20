@@ -38,17 +38,20 @@ overflow: scroll;
 .CharacterBook_button{
   position: relative;
   margin: 10px;
-  top: 10%;
-  left: 12%;
+  top: -56px;
+  left: 10%;
   z-index: 5;
 }
 
 
 
 .CharacterBook_Back,.CharacterBook_Next{
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-size: contain;
   display: inline-block;
   position: absolute;
-  top: 45%;
+  top: 68%;
   width: 50px;
   height: 50px;
   z-index: 4;
@@ -56,14 +59,16 @@ overflow: scroll;
 }
 
 .CharacterBook_Back{
-  background-color: red;
-  left: 2%;
+background-image: url('../sprites/Arrow.png');
+  /* left: 2%; */
+    left: 8%;
 }
 
 
 
 
 .CharacterBook_Next{
-background-color: blue;
-    left: 35%;
+background-image: url('../sprites/ArrowFlip.png');
+    /* left: 35%; */
+    left: 33%;
 }

@@ -13,18 +13,20 @@ return <div className="LoggedInPage">
 
 <div className="LoggedInPage_1">
   <h2>Table of Contents</h2>
-<Link end to={"/search/books"}>Look for Books</Link>
-<Link end to={"/search/libraries"}>Look for Libraries</Link>
-<Link end to={"/search/users"}>Look for Writers</Link>
-<Link end to={"/explore"}>Explore</Link>
-<Link end to={"/settings"}>Settings</Link>
+  <h3>Search for:</h3>
+<Link end to={"/search/books"}>Public Books</Link>
+<Link end to={"/search/libraries"}>Public Libraries</Link>
+<Link end to={"/search/users"}>Writers</Link>
+<Link end to={"/explore"}>Book/Libraries</Link>
+
 </div>
 <div className="LoggedInPage_2">
+<Link end to={`/user/${username}`}>{username}</Link>
 <Link end to={`/user/${username}/libraries`}>My Libraries</Link>
 <Link end to={`/user/${username}/books`}>My Books</Link>
 <Link end to={"/new/library"}>New Library</Link>
 <Link end to={"/new/book"}>New Book</Link>
-<Link end to={`/user/${username}`}>{username}</Link>
+<Link end to={"/settings"}>Settings</Link>
 </div>
 
 

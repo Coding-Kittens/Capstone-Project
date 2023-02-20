@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import useAxios from "../hooks/useAxios";
-import axios from "axios";
 import { UserContext } from "../context/context";
 import Card from "../pieces/Card";
 import NewLibraryBook from "../forms/NewLibraryBook";
-const Search = ({ searchFor = 0 }) => {
+import '../css/Search.css';
+
+const Search = ({ title, searchFor = 0 }) => {
   const currentUser = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const Search = ({ searchFor = 0 }) => {
   const [reqUsers, users, setUsers] = useAxios([]);
   const [addForm, setAddForm] = useState(false);
   const [bookId, setBookId] = useState(null);
+
+
 
   let username = null;
   if (currentUser) username = currentUser.username;
@@ -47,8 +50,8 @@ const Search = ({ searchFor = 0 }) => {
   };
 
   return (
-    <>
-
+    <div className='ListPage'>
+    <h1>{title}</h1>
     {users.length > 0
       ? users.map((user) => (
           <Card
@@ -115,7 +118,7 @@ const Search = ({ searchFor = 0 }) => {
             </div>
           ))
         : null}
-    </>
+    </div>
   );
 };
 export default Search;

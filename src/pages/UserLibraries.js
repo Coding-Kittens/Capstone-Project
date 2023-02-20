@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect,useContext } from "react";
 import Card from "../pieces/Card";
-import axios from "axios";
 import useAxios from "../hooks/useAxios";
 import { UserContext } from "../context/context";
+
 const UserLibraries = () => {
     const currentUser = useContext(UserContext);
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ if(res.message==='Deleted!') setLibraries(libraries.filter(library => library.id
 }
 
   return (
-    <>
+    <div className="ListPage">
       <h1>{`${username}'s Libraries`}</h1>
       {libraries
         ? libraries.map((library) => (
@@ -39,7 +39,7 @@ if(res.message==='Deleted!') setLibraries(libraries.filter(library => library.id
                 :
                 null
             }
-            
+
             </div>
           ))
         : null}
@@ -48,7 +48,7 @@ if(res.message==='Deleted!') setLibraries(libraries.filter(library => library.id
             null
         }
 
-    </>
+    </div>
   );
 };
 export default UserLibraries;

@@ -1,0 +1,47 @@
+.BookMark_Image{
+  display: inline-block;
+    position: absolute;
+    width: 67%;
+    height: 12%;
+    top: 88%;
+    left: 30%;
+  z-index: 3;
+}
+
+.BookMark_button{
+  width: 180px;
+  font-size: .6em;
+  position: absolute;
+  top: 80%;
+  left: 52%;
+  z-index: 4;
+}
+
+.BookMark{
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 90.5%;
+  left: 52%;
+}
+
+.BookMark .PopUp{
+  padding: 25px;
+  background-color: #5F4E73;
+  border-radius: 5px;
+  border-width: 10px;
+  border-style: ridge;
+  border-color: #867996;
+  width: 300px;
+  position: absolute;
+  top: -660px;
+  z-index: 5;
+}
+
+.BookMark .PopUp button{
+  display: inline-block;
+  position: relative;
+  left: 38%;
+  top: 5%;
+  font-size: .5em;
+}

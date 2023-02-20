@@ -7,21 +7,15 @@ import useToggle from '../hooks/useToggle';
 import { useParams } from "react-router-dom";
 import {useState,useEffect} from 'react';
 import closedBook from '../sprites/BookMedival.png'
-import axios from 'axios';
+import useAxios from "../hooks/useAxios";
+
 const WritingPage =()=>{
 const { id } = useParams();
 
-const [book,setBook] = useState();
+const [reqBook,book] = useAxios(null);
 
 useEffect(()=>{
-const getBook = async()=>{
-  const res = await axios.get(`/books/${id}`);
-  if(res.data.book){
-    setBook((n)=> n= res.data.book);
-  }
-
-}
-getBook();
+  reqBook('get',`/books/${id}`,'book');
 },[])
 
 

@@ -7,7 +7,6 @@ import LoginForm from './forms/LoginForm'
 import SignUpForm from './forms/SignUpForm'
 import NewBookForm from './forms/NewBookForm'
 import NewLibraryForm from './forms/NewLibraryForm'
-import UserSettingsForm from './forms/UserSettingsForm'
 import Search from './pages/Search'
 import UserLibraries from './pages/UserLibraries'
 import UserBooks from './pages/UserBooks'
@@ -60,34 +59,34 @@ const signIn = async(data,url,msg)=>{
 
 
 const newBook=async(data)=>{
-  let res = await axios.post(`/users/${currentUser.username}/books/create`,{...data,username:currentUser.username});
+  let res = await axios.post(`/users/${currentUser.username}/books`,{...data,username:currentUser.username});
   // console.log(res);
-  if(res.data){
-    navigate(`/write/book/${res.data.id}`);
+  if(res.data.book){
+    navigate(`/write/book/${res.data.book.id}`);
   }
 }
 
 const editBook=async(data,bookId)=>{
   let res = await axios.patch(`/users/${currentUser.username}/books/${bookId}`,{...data});
   // console.log(res);
-  if(res.data){
-    navigate(`/write/book/${res.data.id}`);
+  if(res.data.book){
+    navigate(`/write/book/${res.data.book.id}`);
   }
 }
 
 const newLibrary=async(data)=>{
   let res = await axios.post(`/users/${currentUser.username}/libraries`,data);
   // console.log(res);
-  if(res.data){
-    navigate(`/library/${res.data.id}`);
+  if(res.data.library){
+    navigate(`/library/${res.data.library.id}`);
   }
 }
 
 const editLibrary=async(data,libraryId)=>{
   let res = await axios.patch(`/libraries/${libraryId}`,data);
   // console.log(res);
-  if(res.data){
-    navigate(`/library/${res.data.id}`);
+  if(res.data.library){
+    navigate(`/library/${res.data.library.id}`);
   }
 }
 
@@ -95,7 +94,13 @@ const logOut = async(event)=>{
   event.preventDefault();
   const res = await axios.get('/logout');
   setUser(null);
-  navigate(`/`);
+  // navigate(`/`);
+}
+
+const deleteUser =async(data)=>{
+  await reqUser('post',`/users/${currentUser.username}/delete`,'',data);
+  setUser(null);
+  navigate('/');
 }
 
 
@@ -116,10 +121,10 @@ const removeMessage=()=>{
           <Route exact="true" path='/login' element={<LoginForm login={(data)=>signIn(data,'/login','Welcome back')}/>}/>
           <Route exact="true" path='/signUp' element={<SignUpForm signUp={(data)=>signIn(data,'/register','Welcome')}/>}/>
 
-          <Route exact="true" path='/search/books' element={<Search/>}/>
-          <Route exact="true" path='/search/libraries' element={<Search searchFor={1}/>}/>
-          <Route exact="true" path='/explore' element={<Search searchFor={2}/>}/>
-          <Route exact="true" path='/search/users' element={<Search searchFor={3}/>}/>
+          <Route exact="true" path='/search/books' element={<Search title="Books"/>}/>
+          <Route exact="true" path='/search/libraries' element={<Search title="Libraries" searchFor={1}/>}/>
+          <Route exact="true" path='/explore' element={<Search title="Books and Libraries" searchFor={2}/>}/>
+          <Route exact="true" path='/search/users' element={<Search title="Writers" searchFor={3}/>}/>
 
           <Route exact="true" path='/user/:username' element={<UserPage/>}/>
           <Route exact="true" path='/user/:username/libraries' element={<UserLibraries/>}/>
@@ -133,8 +138,7 @@ const removeMessage=()=>{
           <Route exact="true" path='/edit/book/:id' element={<NewBookForm addBook={editBook}/>}/>
           <Route exact="true" path='/book/:id' element={<ReadingPage/>}/>
           <Route exact="true" path='/write/book/:id' element={<WritingPage/>}/>
-          <Route exact="true" path='/settings' element={<Settings/>}/>
-          <Route exact="true" path='/user/settings' element={<UserSettingsForm/>}/>
+          <Route exact="true" path='/settings' element={<Settings deleteUser={deleteUser}/>}/>
 
           <Route path="*" element={<PageNotFound/>} />
       </Routes>

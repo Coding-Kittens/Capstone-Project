@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import {useState, useEffect, useContext} from 'react';
 import InputPage from './InputPage';
 import  BookMark from '../books/BookMark';
-import { UserContext } from "../context/context";
+import { UserContext, MessageContext } from "../context/context";
 import Page from './Page';
-import axios from 'axios';
+
 import useAxios from '../hooks/useAxios';
 import '../css/Book.css';
 
@@ -21,11 +21,11 @@ import '../css/Book.css';
 const Book =({areReading,bookId,num_of_pages=2})=>{
 
   const currentUser = useContext(UserContext);
+  const {message,setMessage} = useContext(MessageContext);
   const navigate = useNavigate();
 const [reqPages,pages,setPages] = useAxios([],areReading);
 const [reqBook,book] = useAxios(null);
 const [currPage,setCurrPage]=useState([1,2]);
-
 
 //when the component first renders
 // gets all the pages in the book, if the user is reading the book
@@ -33,8 +33,8 @@ useEffect(()=>{
 const getPages=async()=>{
   if(areReading){
       const res = await reqPages('get',`/books/${bookId}/pages/all`,'pages');
-      if(res.data.length <=0) navigate(`/`); // if its the writer redirect to writing page instead
-      //set message to, There are no pages in this book,   if its the writer, Try writing in it before you read it
+      if(res.data.length <=0) navigate(`/`);
+      setMessage({text: 'There are no pages in this book',color:'orange'});
   }
 }
 getPages();
@@ -110,8 +110,8 @@ const updatePage =async(data)=>{
      :null
   }
 
-  <img className ='Book_cover' src={cover} alt="cover"/>
-  <img className ='Book_pages' src={page} alt="pages"/>
+   <img className ={areReading? 'Book_cover_Reading' : 'Book_cover'} src={cover} alt="cover"/>
+  <img className ={areReading? 'Book_pages_Reading' : 'Book_pages'} src={page} alt="pages"/>
 
   {
      pages.length>0?

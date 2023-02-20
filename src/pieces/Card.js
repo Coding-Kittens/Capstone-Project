@@ -1,3 +1,4 @@
+import '../css/Card.css';
 const Card =({title,texts,handleClick,prop})=>{
 
 return <div className='Card' onClick={()=>handleClick(prop)}>

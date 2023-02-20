@@ -20,11 +20,11 @@ last_name: '',
   }
 
 
-return <form className="SignUpForm" onSubmit ={handleSubmit} >
-  <label>Username<input type="text" name="username" value={formData.username} onChange={handleChange}/></label>
-  <label>Password<input type="text" name="password" value={formData.password} onChange={handleChange}/></label>
-  <label>First Name<input type="text" name="first_name" value={formData.first_name} onChange={handleChange}/></label>
-  <label>Last Name<input type="text" name="last_name" value={formData.last_name} onChange={handleChange}/></label>
+return <form className="Form" onSubmit ={handleSubmit} >
+  <label>Username<input required type="text" name="username" value={formData.username} onChange={handleChange}/></label>
+  <label>Password<input required type="text" name="password" value={formData.password} onChange={handleChange}/></label>
+  <label>First Name<input required type="text" name="first_name" value={formData.first_name} onChange={handleChange}/></label>
+  <label>Last Name<input required type="text" name="last_name" value={formData.last_name} onChange={handleChange}/></label>
   <button type="submit" name="button">Sign Up!</button>
 </form>
 
