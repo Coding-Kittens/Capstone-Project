@@ -1,6 +1,7 @@
 import {render,fireEvent} from '@testing-library/react';
 import { MemoryRouter } from "react-router-dom";
 import NotePage from '../notes/NotePage';
+import '@testing-library/jest-dom/extend-expect';
 
 it('should renders without crashing',()=>{
   render(<MemoryRouter>

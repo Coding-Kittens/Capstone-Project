@@ -1,27 +1,28 @@
 import Character from "./Character";
 import PopUpForm from "../forms/PopUpForm";
-import NewBookCharacterForm from "../forms/NewBookCharacterForm";
+
 import { useState, useEffect } from "react";
-import useToggle from "../hooks/useToggle";
+
 import noteBook from "../sprites/notes1.png";
 import useAxios from "../hooks/useAxios";
 import "../css/CharacterBook.css";
-const CharacterBook = ({ bookId, username }) => {
-  const [reqChars, chars, setChars] = useAxios([],true);
+
+//shows all the characters for a book
+//lets you look at just one character
+//you can flip between characters
+//you can add edit or delete a character
+const CharacterBook = ({ bookId }) => {
+  const [reqChars, chars, setChars] = useAxios([], true);
   const [currChar, setCurrChar] = useState(null);
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [addExistingForm, setAddExistingForm] = useState(false);
 
-
+  //gets all the characters for a book
   useEffect(() => {
     reqChars("get", `/books/${bookId}/characters`, "characters");
   }, []);
 
-  const showContents = () => {
-    setCurrChar(null);
-  };
-
+  //changes the current character
   const changeCharacter = (num) => {
     let newChar = currChar ? currChar + num : num;
     if (newChar < 0) newChar = null;
@@ -29,10 +30,12 @@ const CharacterBook = ({ bookId, username }) => {
     setCurrChar(newChar);
   };
 
+  //adds a character
   const addCharacter = (data) => {
     reqChars("post", `/books/${bookId}/characters`, "character", data);
   };
 
+  //deletes a character
   const deleteCharacter = async (characterId) => {
     const res = await reqChars(
       "delete",
@@ -40,6 +43,7 @@ const CharacterBook = ({ bookId, username }) => {
     );
 
     if (res.message === "Deleted!") {
+      //if you are on that character page it changes it to the character before the current one
       if (currChar) {
         if (chars[currChar - 1].id === characterId) {
           changeCharacter(-1);
@@ -49,10 +53,11 @@ const CharacterBook = ({ bookId, username }) => {
         if (char.id !== characterId) return char;
       });
       if (!updatedChars[0]) updatedChars = [];
-      setChars((n) => (n = updatedChars));
+      setChars(() => (updatedChars));
     }
   };
 
+  //edits a character
   const editCharacter = (data) => {
     const characterId = chars[currChar - 1].id;
     reqChars(
@@ -77,7 +82,7 @@ const CharacterBook = ({ bookId, username }) => {
             { title: "Description", name: "description" },
             { title: "Extra info", name: "extra_info" },
             { title: "Backstory", name: "story" },
-            { title: "Public", name: "is_public",type:'checkbox'},
+            { title: "Public", name: "is_public", type: "checkbox" },
           ]}
           initData={{
             name: chars[currChar - 1].name,
@@ -91,18 +96,15 @@ const CharacterBook = ({ bookId, username }) => {
         />
       ) : null}
 
-
-
       <div className="CharacterBook">
         {currChar ? null : <h3>Table of Contents</h3>}
 
         {currChar && chars.length > 0 ? (
-        <Character
+          <Character
             handleClick={() => setEditForm(true)}
             character={chars[currChar - 1]}
             deleteChar={deleteCharacter}
           />
-
         ) : (
           chars.map((char, inx) => (
             <div className="CharLink" key={char.id}>
@@ -135,7 +137,7 @@ const CharacterBook = ({ bookId, username }) => {
             { title: "Description", name: "description" },
             { title: "Extra info", name: "extra_info" },
             { title: "Backstory", name: "story" },
-            { title: "Public", name: "is_public",type:'checkbox'},
+            { title: "Public", name: "is_public", type: "checkbox" },
           ]}
           initData={{
             name: "",

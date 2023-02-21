@@ -2,18 +2,19 @@ import {render,fireEvent} from '@testing-library/react';
 import { MemoryRouter } from "react-router-dom";
 import UserPage from '../pages/UserPage';
 import {UserContext} from '../context/context';
+import axios from "axios";
 import '@testing-library/jest-dom/extend-expect';
-
-import { server } from './mocks/server.js';
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
 
 jest.mock("react-router-dom", () => ({
  ...jest.requireActual("react-router-dom"),
  useParams: jest.fn(),
 }));
+
+
+beforeAll(async()=>{
+const res2 = await axios.post('/register',{username:'testUser2',password:'123',first_name:'Test2',last_name:'User2'});
+const res = await axios.post('/register',{username:'testUser',password:'098',first_name:'Test',last_name:'User'});
+})
 
 
 
@@ -46,7 +47,6 @@ const page = render(<MemoryRouter>
 
 expect(page.getByText('Username: testUser')).toBeInTheDocument();
 expect(page.getByText('Full Name: Test User')).toBeInTheDocument();
-expect(page.getByText('This is a test user bio')).toBeInTheDocument();
 })
 
 
@@ -74,4 +74,9 @@ const page = render(<MemoryRouter>
   expect(page.getByText(`testUser2's Libraries`)).toBeInTheDocument();
   expect(page.getByText(`testUser2's Books`)).toBeInTheDocument();
 
+})
+
+afterAll(async()=>{
+ await axios.post('/users/testUser/delete');
+ await axios.post('/users/testUser2/delete');
 })

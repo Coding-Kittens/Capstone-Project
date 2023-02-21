@@ -1,31 +1,59 @@
-import useFields from '../hooks/useFields';
+import useFields from "../hooks/useFields";
 import { useParams } from "react-router-dom";
-const NewLibraryForm =({addLibrary})=>{
-const { id } = useParams();
-  const initData ={
-name: '',
-description:'',
-is_public: false,
-  }
 
-const[formData,handleChange,resetFormData] = useFields(initData);
+//a form to make a new library
+const NewLibraryForm = ({ addLibrary }) => {
+  const { id } = useParams();
 
+  const initData = {
+    name: "",
+    description: "",
+    is_public: false,
+  };
 
-const handleSubmit=(event)=>{
-  event.preventDefault();
-  addLibrary(formData,id);
-  resetFormData();
-}
+  const [formData, handleChange, resetFormData] = useFields(initData);
 
-return <form className="Form"  onSubmit={handleSubmit}>
-  <label>Name<input required type="text" name="name" value={formData.name} onChange={handleChange}/></label>
-  <label>Description<input type="text" name="description" value={formData.description} onChange={handleChange}/></label>
-  <label>Public<input type="checkbox" name="is_public" value={formData.is_public} onChange={handleChange}/></label>
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    addLibrary(formData, id);
+    resetFormData();
+  };
 
-  <button type="submit" name="button">Add</button>
-</form>
+  return (
+    <form className="Form" onSubmit={handleSubmit}>
+      <label>
+        Name
+        <input
+          required
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+      </label>
+      <label>
+        Description
+        <input
+          type="text"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+      </label>
+      <label>
+        Public
+        <input
+          type="checkbox"
+          name="is_public"
+          value={formData.is_public}
+          onChange={handleChange}
+        />
+      </label>
 
-
-
-}
+      <button type="submit" name="button">
+        Add
+      </button>
+    </form>
+  );
+};
 export default NewLibraryForm;

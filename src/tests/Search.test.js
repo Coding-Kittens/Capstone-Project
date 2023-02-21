@@ -2,6 +2,7 @@ import {render,fireEvent} from '@testing-library/react';
 import { MemoryRouter } from "react-router-dom";
 import Search from '../pages/Search';
 import {UserContext} from '../context/context';
+import '@testing-library/jest-dom/extend-expect';
 
 it('should renders without crashing',()=>{
   render(<MemoryRouter>

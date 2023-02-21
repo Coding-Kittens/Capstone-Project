@@ -1,9 +1,21 @@
 import useFields from "../hooks/useFields";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useAxios from "../hooks/useAxios";
-const NewLibraryBook = ({ addBook, username, title, isBooks = true, bookId = null, msg = "No books to add!"}) => {
+
+//a for for adding book(s) to a library
+const NewLibraryBook = ({
+  addBook,
+  username,
+  title,
+  isBooks = true,
+  bookId = null,
+  msg = "No books to add!",
+}) => {
   const [reqItems, items] = useAxios([]);
 
+  //gets a list of books or libraries
+  //depending on if your adding a book to librarys
+  //or if you adding books to a library
   useEffect(() => {
     if (isBooks) {
       reqItems("get", `/users/${username}/books`, "books");
@@ -19,7 +31,6 @@ const NewLibraryBook = ({ addBook, username, title, isBooks = true, bookId = nul
       }, {})
     : null;
 
-
   const [formData, handleChange, resetFormData] = useFields({ ...initData });
 
   const handleSubmit = (event) => {
@@ -31,8 +42,8 @@ const NewLibraryBook = ({ addBook, username, title, isBooks = true, bookId = nul
 
   return (
     <form className="Form" onSubmit={handleSubmit}>
-      {items.length>0?
-        items.map((items) =>
+      {items.length > 0 ? (
+        items.map((items) => (
           <label key={items.id}>
             {items[title]}
             <input
@@ -42,16 +53,15 @@ const NewLibraryBook = ({ addBook, username, title, isBooks = true, bookId = nul
               onChange={handleChange}
             />
           </label>
-        )
-       :
+        ))
+      ) : (
         <h2>{msg}</h2>
-      }
+      )}
 
       <button type="submit" name="button">
         Save
       </button>
     </form>
   );
-
 };
 export default NewLibraryBook;

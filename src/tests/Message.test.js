@@ -1,6 +1,7 @@
 import {render,fireEvent} from '@testing-library/react';
 import { MemoryRouter } from "react-router-dom";
 import Message from '../pieces/Message';
+import '@testing-library/jest-dom/extend-expect';
 
 it('should renders without crashing',()=>{
   render(<MemoryRouter>

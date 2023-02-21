@@ -1,27 +1,28 @@
 import Place from "./Place";
 import PopUpForm from "../forms/PopUpForm";
-import NewBookCharacterForm from "../forms/NewBookCharacterForm";
+
 import { useState, useEffect } from "react";
-import useToggle from "../hooks/useToggle";
+
 import noteBook from "../sprites/notes1.png";
 import useAxios from "../hooks/useAxios";
 
-const PlaceBook = ({ bookId, username }) => {
-  const [reqPlaces, places, setPlaces] = useAxios([],true);
+//shows all the places for a book
+//lets you look at just one place
+//you can flip between places
+//you can add edit or delete a place
+const PlaceBook = ({ bookId }) => {
+  const [reqPlaces, places, setPlaces] = useAxios([], true);
   const [currPlace, setCurrPlace] = useState(null);
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [addExistingForm, setAddExistingForm] = useState(false);
 
 
+  //gets all the places for a book
   useEffect(() => {
     reqPlaces("get", `/books/${bookId}/places`, "places");
   }, []);
 
-  const showContents = () => {
-    setCurrPlace(null);
-  };
-
+  //changes the current place so you can flip between places
   const changePlace = (num) => {
     let newPlace = currPlace ? currPlace + num : num;
     if (newPlace < 0) newPlace = null;
@@ -29,14 +30,17 @@ const PlaceBook = ({ bookId, username }) => {
     setCurrPlace(newPlace);
   };
 
+  //adds a place
   const addPlace = async (data) => {
     reqPlaces("post", `/books/${bookId}/places`, "place", data);
   };
 
+  //deletes a place
   const deletePlace = async (placeId) => {
     const res = await reqPlaces("delete", `/books/${bookId}/places/${placeId}`);
 
     if (res.message === "Deleted!") {
+      //if you are on that place page it changes it to the place before the current one
       if (currPlace) {
         if (places[currPlace - 1].id === placeId) {
           changePlace(-1);
@@ -46,10 +50,11 @@ const PlaceBook = ({ bookId, username }) => {
         if (place.id !== placeId) return place;
       });
       if (!updatedPlaces[0]) updatedPlaces = [];
-      setPlaces((n) => (n = updatedPlaces));
+      setPlaces(() => (updatedPlaces));
     }
   };
 
+  //edits a place
   const editPlace = async (data) => {
     const placeId = places[currPlace - 1].id;
     reqPlaces("patch", `/books/${bookId}/places/${placeId}`, "place", data);
@@ -67,7 +72,7 @@ const PlaceBook = ({ bookId, username }) => {
             { title: "Name", name: "name" },
             { title: "Description", name: "description" },
             { title: "Extra info", name: "extra_info" },
-            { title: "Public", name: "is_public",type:'checkbox'},
+            { title: "Public", name: "is_public", type: "checkbox" },
           ]}
           initData={{
             name: places[currPlace - 1].name,
@@ -118,7 +123,7 @@ const PlaceBook = ({ bookId, username }) => {
             { title: "Name", name: "name" },
             { title: "Description", name: "description" },
             { title: "Extra info", name: "extra_info" },
-            { title: "Public", name: "is_public",type:'checkbox' },
+            { title: "Public", name: "is_public", type: "checkbox" },
           ]}
           initData={{
             name: "",

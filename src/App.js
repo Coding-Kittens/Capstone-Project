@@ -14,17 +14,17 @@ import Settings from './pages/Settings'
 import WritingPage from './pages/WritingPage'
 import ReadingPage from './pages/ReadingPage'
 import Library from './libraries/Library'
-import NewLibraryBook from './forms/NewLibraryBook';
 import Message from './pieces/Message'
 import useAxios from './hooks/useAxios';
 import {useState,useEffect} from 'react';
 import axios from 'axios';
 import themes from './data/themes';
 import {ThemeContext,MessageContext,UserContext} from './context/context';
-// import AddImageForm from '/.AddImageForm.js'
 import './css/App.css';
 import './fonts.css';
 
+
+//makes the routs for the site
 function App() {
 
   const changeTheme=(idx)=>{
@@ -49,18 +49,17 @@ function App() {
 const signIn = async(data,url,msg)=>{
   let res = await reqUser('post',url,'user',data);
   if(res.data){
-    setMessage((n)=> n={text:`${msg} ${res.data.username}`,color:'green'});
+    setMessage(()=> ({text:`${msg} ${res.data.username}`,color:'green'}));
     navigate(`/`);
   }
   else if(res.message){
-      setMessage((n)=> n={text: res.message,color:'orange'});
+      setMessage(()=> ({text: res.message,color:'orange'}));
   }
 }
 
 
 const newBook=async(data)=>{
   let res = await axios.post(`/users/${currentUser.username}/books`,{...data,username:currentUser.username});
-  // console.log(res);
   if(res.data.book){
     navigate(`/write/book/${res.data.book.id}`);
   }
@@ -68,7 +67,6 @@ const newBook=async(data)=>{
 
 const editBook=async(data,bookId)=>{
   let res = await axios.patch(`/users/${currentUser.username}/books/${bookId}`,{...data});
-  // console.log(res);
   if(res.data.book){
     navigate(`/write/book/${res.data.book.id}`);
   }
@@ -76,7 +74,6 @@ const editBook=async(data,bookId)=>{
 
 const newLibrary=async(data)=>{
   let res = await axios.post(`/users/${currentUser.username}/libraries`,data);
-  // console.log(res);
   if(res.data.library){
     navigate(`/library/${res.data.library.id}`);
   }
@@ -84,7 +81,6 @@ const newLibrary=async(data)=>{
 
 const editLibrary=async(data,libraryId)=>{
   let res = await axios.patch(`/libraries/${libraryId}`,data);
-  // console.log(res);
   if(res.data.library){
     navigate(`/library/${res.data.library.id}`);
   }
@@ -92,9 +88,8 @@ const editLibrary=async(data,libraryId)=>{
 
 const logOut = async(event)=>{
   event.preventDefault();
-  const res = await axios.get('/logout');
+  await axios.get('/logout');
   setUser(null);
-  // navigate(`/`);
 }
 
 const deleteUser =async(data)=>{
