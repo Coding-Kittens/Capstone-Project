@@ -2,7 +2,7 @@
 import os
 from unittest import TestCase
 
-from flask import Flask,request,session ,jsonify
+from flask import Flask, request, session, jsonify
 from models import User,Library,Book,Page,Note,Character,Place,BookMark,BookPlace,BookCharacter,LibraryBook,db
 from main import app
 
