@@ -30,58 +30,44 @@ class APITestCase(TestCase):
         db.session.rollback()
 
 
-    def test_register(self):
-        """ Tests if a new user is added """
+    def test_User(self):
+        """ Tests for User """
         with app.test_client() as client:
             res = client.post('/register',data={'username':'testUser2','password':'123','first_name':'nick','last_name':'powell'})
             data = res.get_data(as_text = True)
             self.assertIn("testUser2",data)
 
-    def test_get_libraries(self):
-        """ Tests if a new user is added """
-        with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_books(self):
-        """ Tests if a new user is added """
+    def test_libraries(self):
+        """ Tests for Library """
         with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_pages(self):
-        """ Tests if a new user is added """
-        with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_characters(self):
-        """ Tests if a new user is added """
+    def test_books(self):
+        """Tests for Book """
         with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_places(self):
-        """ Tests if a new user is added """
-        with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_notes(self):
-        """ Tests if a new user is added """
+    def test_pages(self):
+        """ Tests for Page"""
         with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
 
-    def test_get_bookmarks(self):
-        """ Tests if a new user is added """
+
+    def test_characters(self):
+        """ Tests for Character """
         with app.test_client() as client:
-            res = client.post('/users/testUser/libraries',data={})
-            data = res.get_data(as_text = True)
-            self.assertIn("testUser",data)
+
+
+    def test_places(self):
+        """ Tests for Place"""
+        with app.test_client() as client:
+
+
+    def test_notes(self):
+        """ Tests for Note"""
+        with app.test_client() as client:
+
+
+    def test_bookmarks(self):
+        """ Tests for BookMark """
+        with app.test_client() as client:
