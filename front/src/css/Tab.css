@@ -1,0 +1,50 @@
+.Tab_Open{
+/* background-image: url('../sprites/bookMark2.png');
+background-repeat: no-repeat;
+background-size: cover; */
+background-color: #901F23;
+border-radius: 15px;
+border-color: black;
+border-width: 3px;
+border-style: solid;
+  width: 140px;
+  height: 500px;
+  text-align: center;
+  position: absolute;
+  top: -640px;
+  left: -540px;
+  z-index: 3;
+}
+
+.Tab{
+  position: relative;
+  background-color: #A54043;
+  border-radius: 10px;
+  border-color: black;
+  border-width: 3px;
+  border-style: solid;
+  width: 60px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  /* height: 30px; */
+  top: -650px;
+  left: -580px;
+  /* top: -700px;
+  left: 120px; */
+  z-index: 3;
+}
+
+.Tab h5{
+  position: absolute;
+  top: -40px;
+  left: 25%;
+  pointer-events: none;
+}
+
+
+.BookMark .Tab_Open .PopUp{
+  left: -210px;
+  top: 30%;
+  position: relative;
+  z-index: 6;
+}

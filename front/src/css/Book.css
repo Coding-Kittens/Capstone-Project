@@ -1,0 +1,20 @@
+
+.Book_cover,.Book_pages{
+  position: absolute;
+  width: 73%;
+  left: 20%;
+  top: -1%;
+  pointer-events: none;
+}
+
+.Book_pages,.Book_pages_Reading{
+  z-index: 2;
+}
+
+.Book_cover_Reading,.Book_pages_Reading{
+  position: absolute;
+  width: 73%;
+  left: 12%;
+  top: -1%;
+  pointer-events: none;
+}
