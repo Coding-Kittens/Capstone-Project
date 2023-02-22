@@ -3,13 +3,13 @@ from flask import Flask,request,session ,jsonify
 from models import Image,User,Library,Book,Page,Note,Character,Place,BookMark,BookPlace,BookCharacter,LibraryBook,connect_db,db
 from werkzeug.utils import secure_filename
 from flask_cors import CORS,cross_origin
-# from flask.ext.session import Session
+
 from flask_session import Session
 import uuid as uuid
 import base64
 import os
 
-app = Flask(__name__,static_folder='build',static_url_path='')
+app = Flask(__name__,static_folder='../front/build',static_url_path='')
 CORS(app)
 @cross_origin(supports_credentials=True)
 
