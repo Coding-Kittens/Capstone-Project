@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 cors=CORS(app,resources={r"/*":{
-"origins":"writing-aura.up.railway.app"
+"origins":"https://writing-aura.up.railway.app"
 }})
 @cross_origin(supports_credentials=True)
 
