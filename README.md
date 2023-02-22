@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+The title of my site is Writing Aura.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+* I used Flask and React.
+* I deployed it on railway.
 
-## Available Scripts
+**Heres the link:** [https://writing-aura.up.railway.app/](https://writing-aura.up.railway.app/)
 
-In the project directory, you can run:
 
-### `npm start`
+It is a book writing site that lets you share your books with others if you want.
+	
+Unlike most book writing sites that just have a text block to write in, this one lets you write in a book format, so it actualy looks like your writing a book.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Site Features:**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* Writing books
+* Reading books
+* Keep track of the characters and places in books
+	* So you can write down information on the 	characters and places/settings in your stories.
+* Writing notes
+	* So you can write notes on your story.
+* Adding bookmarks
+	* So you can go to spacific pages.
+* Keep track of Libraries and the books in each of them
+	* So you can orginize your books in different Libraries.
+	* So you can add books from other users that you would like to read.
+* 'Search'  for books/ libraries/ users.
+	* So you can read other peoples books that they make public.
 
-### `npm test`
+* Edit User
+	* So you can edit your user info like your bio.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**User Flow:**
 
-### `npm run build`
+* Sign-Up
+	* Add a bio to your user page.
+	* Make a new book and start writing.
+		* Add notes, characters, places and bookmarks to help you write and keep track of information for your book.
+		* Make a new library and add your book to it.
+		* If you want to share your book with others make your book public!
+	* Look for and read someone elses book.
+* Login
+	* Go to your books and continue writing one of your books.
+	* Read your old books.
+	* Read other peoples books.
+	
+	
+**Testing:**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Tests for my front end are in a tests folder in the src folder of the React app.
+	* Run the back end with a test db, in main.py
+	
+			`os.environ["DATABASE_URL"] = "postgresql:///library_test"`
+		* run the back end `flask run`
+	* Run the tests for the front end
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+		`npx jest -i`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* Tests for my Back end are in file called test_app.py outside of the src folder.
+	* Run the tests for the back end
+	`python test_app.py  unittest `
+	
+**My API:**
 
-### `npm run eject`
+* My API keeps track of all the information used in my front end and handles authentication and authorization.
+* It keeps track of what user is logged in with flask-session.
+* I made all the routes for each table.
+* For the routes where you add, edit, or delete information, it checks to make sure the user is authorized.
+* For routes where you get information that is privet, it checks to make sure the user is authorized.
+* It keeps track of information for:
+	* Users
+	* Books
+	* Libraries
+	* Characters
+	* Places
+	* Notes
+	* Bookmarks
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+****
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**This is for personal use only!**
 
-## Learn More
+* Please Do not take any of my images or Fonts,
+	*  The Caligraphy font, the hand written font, and the images used, I made myself. 
+* Do Not use my Images or fonts! 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Copyright © 2023 Rose Berry Powell
