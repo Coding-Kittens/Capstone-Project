@@ -12,7 +12,7 @@ const res = await axios.post('/register',{username:'testUser',password:'098',fir
 it('should renders without crashing',()=>{
   render(<MemoryRouter>
     <UserContext.Provider value={{username:'testUser'}}>
-    < MessageContext.Provider value={{'message', (msg)=>console.log(msg)}}>
+    < MessageContext.Provider value={{'message': (msg)=>console.log(msg)}}>
     <Settings/>
   </ MessageContext.Provider>
   </UserContext.Provider>
@@ -22,7 +22,7 @@ it('should renders without crashing',()=>{
 it('should match snapshot',()=>{
 const {asFragment} = render(<MemoryRouter>
   <UserContext.Provider value={{username:'testUser'}}>
-  < MessageContext.Provider value={{'message', (msg)=>console.log(msg)}}>
+  < MessageContext.Provider value={{'message': (msg)=>console.log(msg)}}>
   <Settings/>
 </ MessageContext.Provider>
 </UserContext.Provider>

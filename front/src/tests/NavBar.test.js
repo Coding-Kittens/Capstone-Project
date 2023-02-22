@@ -30,7 +30,7 @@ expect(asFragment()).toMatchSnapshot();
 
 it('should show login,sign-up when not logged in',()=>{
 const nav = render(<MemoryRouter>
-  <UserContext.Provider value={}>
+  <UserContext.Provider value={null}>
   <ThemeContext.Provider value={theme}>
   <NavBar/>
     </ThemeContext.Provider>

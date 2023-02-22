@@ -69,7 +69,7 @@ const page = render(<MemoryRouter>
   expect(page.getByText('test')).not.toBeInTheDocument();
 })
 
-it('should show all public books from another user',()=>{
+it('should show all public books from another user',async()=>{
   const res2 = await axios.post('/register',{username:'testUser2',password:'123',first_name:'Test2',last_name:'User2'});
   jest.spyOn(Router, 'useParams').mockReturnValue({username:'testUser2' });
 const page = render(<MemoryRouter>

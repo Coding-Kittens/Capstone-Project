@@ -24,7 +24,7 @@ expect(asFragment()).toMatchSnapshot();
 
 it('should show LoggedOutPage when user is logged out',()=>{
 const page = render(<MemoryRouter>
-  <UserContext.Provider value={}>
+  <UserContext.Provider value={null}>
   <HomePage/>
     </UserContext.Provider>
   </MemoryRouter>);

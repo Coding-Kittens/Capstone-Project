@@ -97,7 +97,7 @@ const page = render(<MemoryRouter>
 })
 
 
-it('should be able to delete a library',()=>{
+it('should be able to delete a library',async()=>{
   const res2 = await axios.post('/register',{username:'testUser2',password:'123',first_name:'Test2',last_name:'User2'});
     jest.spyOn(Router, 'useParams').mockReturnValue({ username: 'testUser2' });
 const page = render(<MemoryRouter>

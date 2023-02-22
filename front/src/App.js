@@ -26,6 +26,7 @@ import './fonts.css';
 
 //makes the routs for the site
 function App() {
+  const baseURL = process.env.REACT_APP_BASE_URL
 
   const changeTheme=(idx)=>{
     setTheme({...themes[idx],changeTheme});
@@ -59,28 +60,28 @@ const signIn = async(data,url,msg)=>{
 
 
 const newBook=async(data)=>{
-  let res = await axios.post(`/users/${currentUser.username}/books`,{...data,username:currentUser.username});
+  let res = await axios.post(`${baseURL}/users/${currentUser.username}/books`,{...data,username:currentUser.username});
   if(res.data.book){
     navigate(`/write/book/${res.data.book.id}`);
   }
 }
 
 const editBook=async(data,bookId)=>{
-  let res = await axios.patch(`/users/${currentUser.username}/books/${bookId}`,{...data});
+  let res = await axios.patch(`${baseURL}/users/${currentUser.username}/books/${bookId}`,{...data});
   if(res.data.book){
     navigate(`/write/book/${res.data.book.id}`);
   }
 }
 
 const newLibrary=async(data)=>{
-  let res = await axios.post(`/users/${currentUser.username}/libraries`,data);
+  let res = await axios.post(`${baseURL}/users/${currentUser.username}/libraries`,data);
   if(res.data.library){
     navigate(`/library/${res.data.library.id}`);
   }
 }
 
 const editLibrary=async(data,libraryId)=>{
-  let res = await axios.patch(`/libraries/${libraryId}`,data);
+  let res = await axios.patch(`${baseURL}/libraries/${libraryId}`,data);
   if(res.data.library){
     navigate(`/library/${res.data.library.id}`);
   }

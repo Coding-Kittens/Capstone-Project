@@ -15,7 +15,7 @@ import axios from "axios";
 ///
 const useAxios=(initalVal,isList=false)=>{
   const [state,setState] = useState(initalVal)
-
+const baseURL = process.env.REACT_APP_BASE_URL
 
 //makes a request and returns the response
 //takes:
@@ -28,16 +28,16 @@ const useAxios=(initalVal,isList=false)=>{
 
     switch (type){
       case 'get':
-        res = await axios.get(url,{params:{...data}}, {headers:{credentials: 'include'}});
+        res = await axios.get(`${baseURL}/${url}`,{params:{...data}}, {headers:{credentials: 'include'}});
         break;
         case 'post':
-       res = await axios.post(url,{...data},{headers:{credentials: 'include'}});
+       res = await axios.post(`${baseURL}/${url}`,{...data},{headers:{credentials: 'include'}});
           break;
           case 'patch':
-             res = await axios.patch(url,{...data},{headers:{credentials: 'include'}});
+             res = await axios.patch(`${baseURL}/${url}`,{...data},{headers:{credentials: 'include'}});
             break;
             case 'delete':
-             res = await axios.delete(url,{headers:{credentials: 'include'}});
+             res = await axios.delete(`${baseURL}/${url}`,{headers:{credentials: 'include'}});
               break;
       default:
       break;
