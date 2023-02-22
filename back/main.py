@@ -1,4 +1,4 @@
-
+from asgiref.wsgi import WsgiToAsgi
 from flask import Flask,request,session ,jsonify
 from models import Image,User,Library,Book,Page,Note,Character,Place,BookMark,BookPlace,BookCharacter,LibraryBook,connect_db,db
 from werkzeug.utils import secure_filename
@@ -11,6 +11,8 @@ import os
 
 app = Flask(__name__)
 CORS(app)
+
+asgi_app = WsgiToAsgi(app)
 
 cors=CORS(app,resources={r"/*":{
 "origins":"https://writing-aura.up.railway.app"
