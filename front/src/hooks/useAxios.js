@@ -16,7 +16,7 @@ import axios from "axios";
 const useAxios=(initalVal,isList=false)=>{
   const [state,setState] = useState(initalVal)
 const baseURL = process.env.REACT_APP_BASE_URL
-
+// const baseURL = 'http://localhost:5000';
 //makes a request and returns the response
 //takes:
 //type or request 'get','post','patch',or 'delete'
@@ -28,21 +28,20 @@ const baseURL = process.env.REACT_APP_BASE_URL
 
     switch (type){
       case 'get':
-        res = await axios.get(`${baseURL}/${url}`,{params:{...data}}, {headers:{credentials: 'include'}});
+        res = await axios.get(`${baseURL}${url}`,{withCredentials: true, xsrfCookieName:'session',params:{...data}});
         break;
         case 'post':
-       res = await axios.post(`${baseURL}/${url}`,{...data},{headers:{credentials: 'include'}});
+       res = await axios.post(`${baseURL}${url}`,{...data},{withCredentials: true, xsrfCookieName:'session'});
           break;
           case 'patch':
-             res = await axios.patch(`${baseURL}/${url}`,{...data},{headers:{credentials: 'include'}});
+             res = await axios.patch(`${baseURL}${url}`,{...data},{withCredentials: true, xsrfCookieName:'session'});
             break;
             case 'delete':
-             res = await axios.delete(`${baseURL}/${url}`,{headers:{credentials: 'include'}});
+             res = await axios.delete(`${baseURL}${url}`,{withCredentials: true, xsrfCookieName:'session'});
               break;
       default:
       break;
     }
-
 
     if(res.data[key]){
       if(!updateState) return res.data[key];

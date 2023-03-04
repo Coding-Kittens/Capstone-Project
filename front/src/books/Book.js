@@ -33,7 +33,7 @@ const Book = ({ areReading, bookId }) => {
       if (areReading) {
         const res = await reqPages(
           "get",
-          `/books/${bookId}/pages/all`,
+          `/books/${bookId}/all/pages`,
           "pages"
         );
         if (res.data.length <= 0) navigate(`/`);
@@ -66,6 +66,7 @@ const Book = ({ areReading, bookId }) => {
         } else {
           setPages(() => ( [...res]));
         }
+        console.log(res);
       } else if (!areReading && res.data.username !== currentUser.username) {
         navigate(`/book/${bookId}`);
         //set message to: Unautrized! Only the writer of the book can edit the book.

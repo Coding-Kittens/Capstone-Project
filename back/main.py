@@ -4,18 +4,17 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS,cross_origin
 
 from flask_session import Session
+
 import uuid as uuid
 import base64
 import os
 
 app = Flask(__name__)
-CORS(app)
-
 
 cors=CORS(app,resources={r"/*":{
-"origins":"https://writing-aura.up.railway.app"
+"origins":["https://writing-aura.up.railway.app",'http://localhost:3000']
 }})
-@cross_origin(supports_credentials=True)
+
 
 def serve():
     return send_from_directory(app.static_folder,'index.html')
@@ -29,20 +28,26 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY','catsArethebest')
 app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_SQLALCHEMY'] = db
 
 connect_db(app)
 db.create_all()
 
-app.config['SESSION_SQLALCHEMY'] = db
-ses = Session(app)
 
+ses = Session(app)
 ses.app.session_interface.db.create_all()
 ##################################### Users #################################
 
 ############################################################ get current user
+
 @app.route("/logged-in-user", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def logged_in_user():
     """Returns current user"""
+    print('-------------------')
+    print(session)
+    print(request.headers)
+    print('-------------------')
     if "username" in session:
         try:
             user = User.query.get_or_404(session["username"])
@@ -57,6 +62,7 @@ def logged_in_user():
 ####################################################### register
 
 @app.route("/register", methods=["POST"])
+@cross_origin(supports_credentials=True)
 def register_user():
     """Makes a new user"""
     data = request.get_json()
@@ -69,6 +75,10 @@ def register_user():
                 )
         session["username"] = data.get('username')
         session.modified = True
+        print('-------------------')
+        print(session)
+        print(request.headers)
+        print('-------------------')
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
@@ -81,6 +91,7 @@ def register_user():
 ####################################################### login
 
 @app.route("/login", methods=["POST"])
+@cross_origin(supports_credentials=True)
 def login_user():
     """Process the login form. if the user is authenticated goes to /users/<username>"""
     try:
@@ -89,6 +100,10 @@ def login_user():
         if current_user:
             session["username"] = current_user.username
             session.modified = True
+            print('-------------------')
+            print(session)
+            print(request.headers)
+            print('-------------------')
             return jsonify({'user': current_user.serialize()})
         else:
             return jsonify({'message': 'Invalid username or password, please try again.'})
@@ -102,6 +117,7 @@ def login_user():
 ####################################################### logout
 
 @app.route("/logout", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def logout_user():
     """Logs out current user"""
     try:
@@ -119,6 +135,7 @@ def logout_user():
 ####################################################### Get users
 
 @app.route("/users", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def users_page():
     """gets all users"""
     users = User.query.all();
@@ -128,6 +145,7 @@ def users_page():
 ####################################################### Get user ################
 
 @app.route("/users/<username>", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def get_user(username):
     """gets a user"""
     user = User.query.get_or_404(username)
@@ -138,6 +156,7 @@ def get_user(username):
 ####################################################### edit user
 
 @app.route("/users/<username>", methods=["PATCH"])
+@cross_origin(supports_credentials=True)
 def edit_user(username):
     """Edits a user"""
     if "username" in session and session["username"] == username:
@@ -164,6 +183,7 @@ def edit_user(username):
 ####################################################### change user password
 
 @app.route("/users/<username>/change_password", methods=["PATCH"])
+@cross_origin(supports_credentials=True)
 def change_password(username):
     """changes a user's password"""
     if "username" in session and session["username"] == username:
@@ -186,6 +206,7 @@ def change_password(username):
 ####################################################### delete user ##############################
 
 @app.route("/users/<username>/delete", methods=["POST"])
+@cross_origin(supports_credentials=True)
 def delete_user(username):
     """Deletes user"""
     if "username" in session and session["username"] == username:
@@ -208,6 +229,8 @@ def delete_user(username):
 #
 #
 # @app.route("/users/<username>/image",methods =['GET'])
+#@cross_origin(supports_credentials=True)
+#
 # def get_all_images(username):
 #     """gets all images for a user """
 #
@@ -218,6 +241,7 @@ def delete_user(username):
 #
 #
 # @app.route("/users/<username>/image/<imageName>",methods =['GET'])
+#@cross_origin(supports_credentials=True)
 # def get_image(username,imageName):
 #     """gets an image """
 #     if "username" in session:
@@ -227,6 +251,7 @@ def delete_user(username):
 #
 #
 # @app.route("/users/<username>/image",methods =['POST']) ##################################################################redo
+#@cross_origin(supports_credentials=True)
 # def add_image(username):
 #     """adds a new image"""
 #
@@ -253,6 +278,7 @@ def delete_user(username):
 #
 #
 # @app.route("/users/<username>/profile_img",methods =['POST'])
+#@cross_origin(supports_credentials=True)
 # def profile_image(username):
 #     """adds or changes a users profile_img """
 #
@@ -268,6 +294,7 @@ def delete_user(username):
 #
 #
 # @app.route("/image/<imageName>",methods =['DELETE'])
+#@cross_origin(supports_credentials=True)
 # def delete_image(imageName):
 #     """deletes a page"""
 #     if "username" in session:
@@ -283,6 +310,7 @@ def delete_user(username):
 
 ####################################################### get public libraries
 @app.route("/libraries/public/<int:off_set>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_public_libraries(off_set):
     """gets public libraries"""
     try:
@@ -298,6 +326,7 @@ def get_public_libraries(off_set):
 
 ####################################################### get all user libraries
 @app.route("/users/<username>/libraries/",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_user_libraries(username):
     """gets all of the current users libraries or all the public libraries of another user"""
     # print('-------------------------user libraries')
@@ -320,6 +349,7 @@ def get_user_libraries(username):
 
 ####################################################### get library
 @app.route("/libraries/<int:library_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_library(library_id):
     """gets a library"""
     if "username" in session:
@@ -337,6 +367,7 @@ def get_library(library_id):
 
 ####################################################### get all library books
 @app.route("/libraries/<int:library_id>/books",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_library_books(library_id):
     """gets all of the books in a library"""
     library = Library.query.get_or_404(library_id)
@@ -348,6 +379,7 @@ def get_library_books(library_id):
 ####################################################### new library
 
 @app.route("/users/<username>/libraries",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def add_library(username):
     """makes a new library"""
     if "username" in session and session["username"] == username:
@@ -367,6 +399,7 @@ def add_library(username):
 ####################################################### new library book
 
 @app.route("/users/<username>/libraries/books",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def make_library_book(username):
     """adds a book to a library"""
     if "username" in session and session["username"] == username:
@@ -389,6 +422,7 @@ def make_library_book(username):
 ####################################################### delete library book
 
 @app.route("/libraries/<int:library_id>/books/<int:book_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_library_book(library_id,book_id):
     """deletes a book to a library"""
     if "username" in session:
@@ -409,6 +443,7 @@ def delete_library_book(library_id,book_id):
 ####################################################### edit library
 
 @app.route("/libraries/<int:library_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_library(library_id):
     """edits a book"""
     if "username" in session:
@@ -431,6 +466,7 @@ def edit_library(library_id):
 
 ####################################################### delete library
 @app.route("/libraries/<int:library_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_library(library_id):
     """deletes a library"""
     if "username" in session:
@@ -453,6 +489,7 @@ def delete_library(library_id):
 
 ####################################################### get all public
 @app.route("/books",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_all_books():
     """gets all public books"""
     try:
@@ -468,6 +505,7 @@ def get_all_books():
 
 ####################################################### get all user books
 @app.route("/users/<username>/books",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_user_books(username):
     """gets all of a users books if the user is not the one signed in it gets all the public books from the user"""
     try:
@@ -488,6 +526,7 @@ def get_user_books(username):
 
 ####################################################### get
 @app.route("/books/<int:book_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_book(book_id):
     """gets a book"""
     if "username" in session:
@@ -504,6 +543,7 @@ def get_book(book_id):
 ####################################################### new book
 
 @app.route("/users/<username>/books",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def make_book(username):
     """makes a new book"""
     if "username" in session and session["username"] == username:
@@ -524,6 +564,7 @@ def make_book(username):
 ####################################################### edit book
 
 @app.route("/users/<username>/books/<int:book_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_book(username,book_id):
     """edits a book"""
     if "username" in session and session["username"] == username:
@@ -549,6 +590,7 @@ def edit_book(username,book_id):
 
 ####################################################### delete book
 @app.route("/users/<username>/books/<int:book_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_book(username,book_id):
     """deletes a book"""
     if "username" in session and session["username"] == username:
@@ -567,7 +609,8 @@ def delete_book(username,book_id):
 
 
 ####################################################### get all pages for book
-@app.route("/books/<int:book_id>/pages/all",methods =['GET'])
+@app.route("/books/<int:book_id>/all/pages",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_book_pages(book_id):
     """gets all the ids and page numbers for the pages in a book"""
     if "username" in session:
@@ -583,27 +626,30 @@ def get_book_pages(book_id):
     return jsonify({'message':'Unauthorized!'}), 401
 
 ####################################################### get page
-@app.route("/books/<int:book_id>/pages/<int:page_num>",methods =['GET'])
-def get_page(book_id,page_num):
-    """ gets a page """
-    if "username" in session:
-        try:
-            book = Book.query.get_or_404(book_id)
-            if book.is_public or session["username"] == book.username:
-                # page = Page.query.get_or_404(page_id)
-                page = Page.query.filter_by(book_id=book_id,page_num=page_num).one();
-                return jsonify({'page':page.serialize()})
-        except Exception as e:
-            print('-------------------------get page error------------')
-            print(e)
-            print('-------------------------')
-            return jsonify({'message':'Page not found!'})
-    return jsonify({'message':'Unauthorized!'}), 401
+# @app.route("/books/<int:book_id>/pages/<int:page_num>",methods =['GET'])
+# @cross_origin(supports_credentials=True)
+# def get_page(book_id,page_num):
+#     """ gets a page """
+#     if "username" in session:
+#         try:
+#             book = Book.query.get_or_404(book_id)
+#             if book.is_public or session["username"] == book.username:
+#                 # page = Page.query.get_or_404(page_id)
+#                 page = Page.query.filter_by(book_id=book_id,page_num=page_num).one();
+#                 return jsonify({'page':page.serialize()})
+#         except Exception as e:
+#             print('-------------------------get page error------------')
+#             print(e)
+#             print('-------------------------')
+#             return jsonify({'message':'Page not found!'})
+#     return jsonify({'message':'Unauthorized!'}), 401
 
 ####################################################### get pages
 @app.route("/books/<int:book_id>/pages",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_pages(book_id):
     """ gets a page """
+    breakpoint
     if "username" in session:
         try:
             book = Book.query.get_or_404(book_id)
@@ -614,6 +660,9 @@ def get_pages(book_id):
                 i=0
                 while i < num_of_pages:
                     page = Page.query.filter_by(book_id=book_id,page_num=page_nums[i]).one();
+                    print('-------------------------get pages error------------')
+                    print(page)
+                    print('-------------------------')
                     pages.append(page)
                     i+=1
                 return jsonify({'pages':[page.serialize() for page in pages]})
@@ -621,15 +670,19 @@ def get_pages(book_id):
             print('-------------------------get pages error------------')
             print(e)
             print('-------------------------')
-        return jsonify({'message':'Page not found!'})
+            return jsonify({'message':'Page not found!'})
     return jsonify({'message':'Unauthorized!'}), 401
 
 
 ####################################################### new page
 
 @app.route("/books/<int:book_id>/pages",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def add_page(book_id):
     """makes a new page"""
+    print('-------------------')
+    print('post')
+    print('-------------------')
     if "username" in session:
         try:
             book = Book.query.get_or_404(book_id)
@@ -656,6 +709,7 @@ def add_page(book_id):
 
 ####################################################### edit page
 @app.route("/books/<int:book_id>/pages/<int:page_num>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_page(book_id,page_num):
     """edits a book"""
     try:
@@ -681,6 +735,7 @@ def edit_page(book_id,page_num):
 
 ####################################################### delete page
 @app.route("/books/<int:book_id>/pages/<int:page_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_page(book_id,page_id):
     """deletes a page"""
     if "username" in session:
@@ -703,6 +758,7 @@ def delete_page(book_id,page_id):
 
 ####################################################### get all notes for a book
 @app.route("/books/<int:book_id>/notes",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_book_notes(book_id):
     """gets all the ids and page numbers for the pages in a book"""
     if "username" in session:
@@ -718,6 +774,7 @@ def get_book_notes(book_id):
 
 ####################################################### get note
 @app.route("/notes/<int:note_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_notes(note_id):
     """ gets a page """
     if "username" in session:
@@ -735,6 +792,7 @@ def get_notes(note_id):
 ####################################################### new note
 
 @app.route("/books/<int:book_id>/notes",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def new_note(book_id):
     """makes a new page"""
     book = Book.query.get_or_404(book_id)
@@ -755,6 +813,7 @@ def new_note(book_id):
 
 ####################################################### edit note
 @app.route("/notes/<int:note_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_note(note_id):
     """edits a note"""
     if "username" in session:
@@ -777,6 +836,7 @@ def edit_note(note_id):
 
 ####################################################### switch order note
 @app.route("/notes/<int:note_id>/<int:other_note_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def switch_note_order(note_id,other_note_id):
     """edits a book"""
     if "username" in session:
@@ -800,6 +860,7 @@ def switch_note_order(note_id,other_note_id):
 
 ####################################################### delete note
 @app.route("/books/<int:book_id>/notes/<int:note_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_note(book_id,note_id):
     """deletes a note"""
     if "username" in session:
@@ -824,6 +885,7 @@ def delete_note(book_id,note_id):
 
 ####################################################### get all characters for book
 @app.route("/books/<int:book_id>/characters",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_book_characters(book_id):
     """gets all the characters for a book"""
     if "username" in session:
@@ -840,6 +902,7 @@ def get_book_characters(book_id):
 
 ####################################################### get all characters for user
 # @app.route("/user/<username>/characters",methods =['GET'])
+#@cross_origin(supports_credentials=True)
 # def get_user_characters(username):
 #     """gets all the characters for a book"""
 #     if "username" in session and session["username"] == username:
@@ -860,6 +923,7 @@ def get_book_characters(book_id):
 
 ####################################################### get character
 @app.route("/books/<int:book_id>/characters/<int:character_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_characters(book_id,character_id):
     """ gets a character """
     if "username" in session:
@@ -878,6 +942,7 @@ def get_characters(book_id,character_id):
 ####################################################### new character
 
 @app.route("/books/<int:book_id>/characters",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def new_character(book_id):
     """makes a new character"""
     book = Book.query.get_or_404(book_id)
@@ -900,6 +965,7 @@ def new_character(book_id):
 ####################################################### new book character
 
 @app.route("/books/<int:book_id>/characters/<int:character_id>",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def new_book_character(book_id,character_id):
     """ adds a character to a book"""
     book = Book.query.get_or_404(book_id)
@@ -919,6 +985,7 @@ def new_book_character(book_id,character_id):
 
 ####################################################### edit character
 @app.route("/books/<int:book_id>/characters/<int:character_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_character(book_id,character_id):
     """edits a character"""
     if "username" in session:
@@ -946,6 +1013,7 @@ def edit_character(book_id,character_id):
 
 ####################################################### delete character
 @app.route("/books/<int:book_id>/characters/<int:character_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_character(book_id,character_id):
     """deletes a character"""
     if "username" in session:
@@ -969,6 +1037,7 @@ def delete_character(book_id,character_id):
 
 ####################################################### get all bookmarks for book
 @app.route("/bookmarks/<int:book_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_bookmarks(book_id):
     """gets all bookmarks for a book"""
     if "username" in session:
@@ -985,6 +1054,7 @@ def get_bookmarks(book_id):
 
 ####################################################### get bookmark
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_bookmark(book_id,page_id):
     """ gets a bookmark """
     if "username" in session:
@@ -1003,6 +1073,7 @@ def get_bookmark(book_id,page_id):
 ####################################################### new bookmark
 
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def add_bookmark(book_id,page_id):
     """makes a new bookmark"""
     book = Book.query.get_or_404(book_id)
@@ -1023,6 +1094,7 @@ def add_bookmark(book_id,page_id):
 
 ####################################################### edit bookmark
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_bookmark(book_id,page_id):
     """edits a bookmark"""
     if "username" in session:
@@ -1045,6 +1117,7 @@ def edit_bookmark(book_id,page_id):
 
 ####################################################### delete bookmark
 @app.route("/bookmarks/<int:book_id>/<int:page_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_bookmark(book_id,page_id):
     """deletes a bookmark"""
     if "username" in session:
@@ -1066,6 +1139,7 @@ def delete_bookmark(book_id,page_id):
 
 ####################################################### get all places for book
 @app.route("/books/<int:book_id>/places",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_book_place(book_id):
     """gets all the places for a book"""
     if "username" in session:
@@ -1081,6 +1155,7 @@ def get_book_place(book_id):
 
 ####################################################### get place
 @app.route("/books/<int:book_id>/places/<int:place_id>",methods =['GET'])
+@cross_origin(supports_credentials=True)
 def get_place(book_id,place_id):
     """ gets a place """
     if "username" in session:
@@ -1100,6 +1175,7 @@ def get_place(book_id,place_id):
 ####################################################### new place
 
 @app.route("/books/<int:book_id>/places",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def new_place(book_id):
     """makes a new place"""
     book = Book.query.get_or_404(book_id)
@@ -1122,6 +1198,7 @@ def new_place(book_id):
 ####################################################### new book place
 
 @app.route("/books/<int:book_id>/places/<int:place_id>",methods =['POST'])
+@cross_origin(supports_credentials=True)
 def new_book_place(book_id,place_id):
     """ adds a place to a book"""
     book = Book.query.get_or_404(book_id)
@@ -1141,6 +1218,7 @@ def new_book_place(book_id,place_id):
 
 ####################################################### edit place
 @app.route("/books/<int:book_id>/places/<int:place_id>",methods =['PATCH'])
+@cross_origin(supports_credentials=True)
 def edit_place(book_id,place_id):
     """edits a place"""
     if "username" in session:
@@ -1166,6 +1244,7 @@ def edit_place(book_id,place_id):
 
 ####################################################### delete place
 @app.route("/books/<int:book_id>/places/<int:place_id>",methods =['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete_place(book_id,place_id):
     """deletes a place"""
     if "username" in session:
