@@ -44,10 +44,6 @@ ses.app.session_interface.db.create_all()
 @cross_origin(supports_credentials=True)
 def logged_in_user():
     """Returns current user"""
-    print('-------------------')
-    print(session)
-    print(request.headers)
-    print('-------------------')
     if "username" in session:
         try:
             user = User.query.get_or_404(session["username"])
@@ -75,10 +71,6 @@ def register_user():
                 )
         session["username"] = data.get('username')
         session.modified = True
-        print('-------------------')
-        print(session)
-        print(request.headers)
-        print('-------------------')
         db.session.add(new_user)
         db.session.commit()
     except Exception as e:
@@ -100,10 +92,6 @@ def login_user():
         if current_user:
             session["username"] = current_user.username
             session.modified = True
-            print('-------------------')
-            print(session)
-            print(request.headers)
-            print('-------------------')
             return jsonify({'user': current_user.serialize()})
         else:
             return jsonify({'message': 'Invalid username or password, please try again.'})
@@ -162,9 +150,6 @@ def edit_user(username):
     if "username" in session and session["username"] == username:
         try:
             data = request.get_json()
-            print('-------------------')
-            print(data)
-            print('-------------------')
             user = User.query.get_or_404(username)
             user.first_name = data.get('first_name',user.first_name)
             user.last_name = data.get('last_name',user.last_name)
@@ -325,16 +310,10 @@ def get_public_libraries(off_set):
 
 
 ####################################################### get all user libraries
-@app.route("/users/<username>/libraries/",methods =['GET'])
+@app.route("/users/libraries/<username>",methods =['GET'])
 @cross_origin(supports_credentials=True)
 def get_user_libraries(username):
     """gets all of the current users libraries or all the public libraries of another user"""
-    # print('-------------------------user libraries')
-    # print('session:',session)
-    # print('session user:',session.get("username",'no user'))
-    # print('username:',username)
-    # # breakpoint()
-    # print('-------------------------')
     libraries = []
     try:
         if "username" in session and session["username"] == username:

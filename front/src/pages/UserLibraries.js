@@ -13,7 +13,7 @@ const UserLibraries = () => {
 
   //gets all the users libraries
   useEffect(() => {
-    reqLibraries("get", `/users/${username}/libraries`, "libraries");
+    reqLibraries("get", `/users/libraries/${username}`, "libraries");
   }, []);
 
   //deletes a library
