@@ -26,8 +26,8 @@ import './fonts.css';
 
 //makes the routs for the site
 function App() {
-  const baseURL = process.env.REACT_APP_BASE_URL
-// const baseURL = 'http://localhost:5000';
+  // const baseURL = process.env.REACT_APP_BASE_URL
+const baseURL = 'http://localhost:5000';
   const changeTheme=(idx)=>{
     setTheme({...themes[idx],changeTheme});
   }
@@ -89,7 +89,7 @@ const editLibrary=async(data,libraryId)=>{
 
 const logOut = async(event)=>{
   event.preventDefault();
-  await axios.get('/logout');
+  await axios.get(`${baseURL}/logout`,{withCredentials: true, xsrfCookieName:'session'});
   setUser(null);
 }
 

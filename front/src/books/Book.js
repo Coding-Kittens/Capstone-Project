@@ -1,10 +1,9 @@
-import cover from "../sprites/OpenBook1.png";
-import page from "../sprites/OpenBookPages.png";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import InputPage from "./InputPage";
 import BookMark from "../books/BookMark";
-import { UserContext, MessageContext } from "../context/context";
+import { UserContext } from "../context/context";
+//MessageContext
 import Page from "./Page";
 
 import useAxios from "../hooks/useAxios";
@@ -18,9 +17,9 @@ import "../css/Book.css";
 //   add pages when there are no more Pages
 //   updates the pages when changeing pages and when user presses save
 ///////////
-const Book = ({ areReading, bookId }) => {
+const Book = ({ areReading, bookId, cover_color,theme}) => {
   const currentUser = useContext(UserContext);
-  const setMessage = useContext(MessageContext).setMessage;
+  // const setMessage = useContext(MessageContext).setMessage;
   const navigate = useNavigate();
   const [reqPages, pages, setPages] = useAxios([], areReading);
   const [reqBook] = useAxios(null);
@@ -31,16 +30,11 @@ const Book = ({ areReading, bookId }) => {
   useEffect(() => {
     const getPages = async () => {
       if (areReading) {
-        const res = await reqPages(
+        await reqPages(
           "get",
           `/books/${bookId}/all/pages`,
           "pages"
         );
-        if (res.data.length <= 0) navigate(`/`);
-        setMessage({
-          text: "There are no pages in this book",
-          color: "orange",
-        });
       }
     };
     getPages();
@@ -132,12 +126,13 @@ const Book = ({ areReading, bookId }) => {
 
       <img
         className={areReading ? "Book_cover_Reading" : "Book_cover"}
-        src={cover}
+        src={theme.openBookImg}
         alt="cover"
       />
       <img
-        className={areReading ? "Book_pages_Reading" : "Book_pages"}
-        src={page}
+        style={{ backgroundColor: cover_color}}
+        className={`image_color ${areReading ? "Book_pages_Reading" : "Book_pages"}`}
+        src={theme.overOpenImg}
         alt="pages"
       />
 

@@ -5,10 +5,61 @@
   top: 15%;
 }
 
+.image_color{
+  mix-blend-mode: multiply;
+  background-color: blue;
+}
+
 .WritingPage_charBook,.WritingPage_placeBook,.WritingPage_noteBook{
   position: relative;
   font-size: .47em;
   left: .5%;
   top: -597px;
   z-index: 5;
+}
+
+.WritingPage_title{
+  text-align: center;
+  font-size: 2em;
+  position: absolute;
+  left: 39%;
+  width: 20%;
+  top: 20%;
+    z-index: 5;
+}
+
+
+@media (max-width: 1000px) {
+
+  .WritingPage_closedBook{
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    top: 15%;
+  }
+
+  .image_color{
+    mix-blend-mode: multiply;
+  }
+
+  .WritingPage_charBook,.WritingPage_placeBook,.WritingPage_noteBook{
+    position: relative;
+    font-size: .47em;
+    left: .5%;
+    top: -597px;
+    z-index: 5;
+  }
+
+  .WritingPage_title{
+    text-align: center;
+    font-size: 2em;
+    position: absolute;
+    left: 39%;
+    width: 20%;
+    top: 20%;
+      z-index: 5;
+  }
+
+
+
 }

@@ -25,7 +25,7 @@ const NavBar = ({ logOut }) => {
           >
             {currentUser.username}
           </NavLink>
-          <NavLink className="Nav-Link" end to={"/"} onClick={logOut}>
+          <NavLink className="Nav-Link" end to={"/logout"} onClick={logOut}>
             Logout
           </NavLink>
         </>

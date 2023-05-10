@@ -24,8 +24,7 @@ const PopUpForm = ({ submit, inputs, initData, submitText, closeForm }) => {
   return (
     <>
       <form className="PopUp" onSubmit={handleSubmit}>
-        {inputs
-          ? inputs.map((input) => (
+        { inputs.map((input) => (
               <label key={uuidv4()}>
                 {input.title}
                 <input
@@ -36,7 +35,7 @@ const PopUpForm = ({ submit, inputs, initData, submitText, closeForm }) => {
                 />
               </label>
             ))
-          : null}
+        }
         {closeForm ? (
           <button type="button" onClick={closeForm} name="button">
             Cancle

@@ -1,4 +1,4 @@
-import PopUpForm from "../forms/PopUpForm";
+import BookMarkForm from "../forms/BookMarkForm";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import bookmark from "../sprites/bookMark.png";
@@ -70,14 +70,13 @@ const BookMark = ({ bookId, currPageId, changePage }) => {
           : null}
 
         {addForm ? (
-          <PopUpForm
-            closeForm={() => setAddForm(false)}
-            submit={(data) => addNote(data, currPageId)}
-            inputs={[{ name: "text", title: "Note" }]}
-            initData={{
-              text: "",
-            }}
-            submitText="Add"
+          <BookMarkForm
+          closeForm={() => setAddForm(false)}
+          submit={(data) => addNote(data, currPageId)}
+          initData={{
+            text: "",
+          }}
+          submitText="Add"
           />
         ) : (
           <>

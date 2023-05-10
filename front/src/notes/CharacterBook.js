@@ -1,5 +1,5 @@
 import Character from "./Character";
-import PopUpForm from "../forms/PopUpForm";
+import CharacterForm from "../forms/CharacterForm";
 
 import { useState, useEffect } from "react";
 
@@ -73,26 +73,11 @@ const CharacterBook = ({ bookId }) => {
       <img className="CharacterBook_Image" src={noteBook} alt="NoteBook" />
 
       {currChar && editForm ? (
-        <PopUpForm
-          closeForm={() => setEditForm(false)}
-          submit={editCharacter}
-          inputs={[
-            { title: "Name", name: "name" },
-            { title: "Birthday", name: "birthday" },
-            { title: "Description", name: "description" },
-            { title: "Extra info", name: "extra_info" },
-            { title: "Backstory", name: "story" },
-            { title: "Public", name: "is_public", type: "checkbox" },
-          ]}
-          initData={{
-            name: chars[currChar - 1].name,
-            birthday: chars[currChar - 1].birthday,
-            description: chars[currChar - 1].description,
-            extra_info: chars[currChar - 1].extra_info,
-            story: chars[currChar - 1].story,
-            is_public: chars[currChar - 1].is_public,
-          }}
-          submitText="Edit Character"
+        <CharacterForm
+        closeForm={() => setEditForm(false)}
+        submit={editCharacter}
+        submitText="Edit Character"
+        char ={chars[currChar - 1]}
         />
       ) : null}
 
@@ -128,26 +113,10 @@ const CharacterBook = ({ bookId }) => {
       </div>
 
       {addForm ? (
-        <PopUpForm
-          closeForm={() => setAddForm(false)}
-          submit={addCharacter}
-          inputs={[
-            { title: "Name", name: "name" },
-            { title: "Birthday", name: "birthday" },
-            { title: "Description", name: "description" },
-            { title: "Extra info", name: "extra_info" },
-            { title: "Backstory", name: "story" },
-            { title: "Public", name: "is_public", type: "checkbox" },
-          ]}
-          initData={{
-            name: "",
-            birthday: "",
-            description: "",
-            extra_info: "",
-            story: "",
-            is_public: false,
-          }}
-          submitText="Add Character"
+        <CharacterForm
+        closeForm={() => setAddForm(false)}
+        submit={addCharacter}
+        submitText="Add Character"
         />
       ) : (
         <>

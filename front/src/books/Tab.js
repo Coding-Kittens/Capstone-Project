@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PopUpForm from "../forms/PopUpForm";
+import BookMarkForm from "../forms/BookMarkForm";
 import "../css/Tab.css";
 
 //shows one bookmark tab
@@ -36,14 +36,13 @@ const Tab = ({
       <h5>{info.page_num}</h5>
 
       {editForm ? (
-        <PopUpForm
-          closeForm={() => setEditForm(false)}
-          submit={handleEdit}
-          inputs={[{ name: "text", title: "Note" }]}
-          initData={{
-            text: info.text,
-          }}
-          submitText="Edit"
+        <BookMarkForm
+        closeForm={() => setEditForm(false)}
+        submit={handleEdit}
+        initData={{
+          text: info.text,
+        }}
+        submitText="Edit"
         />
       ) : null}
 

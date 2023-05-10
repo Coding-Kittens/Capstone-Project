@@ -8,7 +8,7 @@ import newBook from "../sprites/NewBook.png";
 import ink from "../sprites/ink2.png";
 import useAxios from "../hooks/useAxios";
 import useToggle from "../hooks/useToggle";
-import PopUpForm from "../forms/PopUpForm";
+import UserForm from "../forms/UserForm";
 import "../css/UserPage.css";
 import { UserContext } from "../context/context";
 
@@ -47,19 +47,9 @@ const UserPage = () => {
             <h1>Autobiography</h1>
             <h2>Username: {username}</h2>
             {editForm ? (
-              <PopUpForm
-                submit={editUser}
-                inputs={[
-                  { title: "First name", name: "first_name" },
-                  { title: "Last name", name: "last_name" },
-                  { title: "Bio", name: "bio" },
-                ]}
-                initData={{
-                  first_name: user.first_name,
-                  last_name: user.last_name,
-                  bio: user.bio ? user.bio : "",
-                }}
-                submitText="Save"
+              <UserForm
+              submit={editUser}
+              user ={user}
               />
             ) : (
               <>

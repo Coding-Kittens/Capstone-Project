@@ -290,6 +290,84 @@ def delete_user(username):
 #             return jsonify({message:'Deleted!'})
 #     return jsonify({message:'Unauthorized!'});
 #
+
+
+
+# ####################################################### get all Images for a user
+# @app.route("/books/<int:book_id>/notes",methods =['GET'])
+# @cross_origin(supports_credentials=True)
+# def get_images(book_id):
+#     """gets all the ids and page numbers for the pages in a book"""
+#     if "username" in session:
+#         try:
+#             notes = Note.query.filter_by(book_id=book_id).order_by('order').all()
+#             if session["username"] == notes[0].book.username:
+#                 return jsonify({'notes':[note.serialize() for note in notes]})
+#         except Exception as e:
+#             print('-------------------')
+#             print(e)
+#             print('-------------------')
+#     return jsonify({'message':'Unauthorized!'}), 401
+#
+# ####################################################### new Image
+#
+# @app.route("/books/<int:book_id>/notes",methods =['POST'])
+# @cross_origin(supports_credentials=True)
+# def new_image(book_id):
+#     """makes a new page"""
+#     book = Book.query.get_or_404(book_id)
+#     if "username" in session and session["username"] == book.username:
+#         try:
+#             data = request.get_json()
+#             note = Note(book_id=book_id,title=data.get('title'),text=data.get('text'),order=data.get('order'))
+#             db.session.add(note)
+#             db.session.commit()
+#             return jsonify({'note':note.serialize()}), 201
+#         except Exception as e:
+#             print('-------------------')
+#             print(e)
+#             print('-------------------')
+#     return jsonify({'message':'Unauthorized!'}), 401
+#
+#
+# ####################################################### delete Image
+# @app.route("/books/<int:book_id>/notes/<int:note_id>",methods =['DELETE'])
+# @cross_origin(supports_credentials=True)
+# def delete_image(book_id,note_id):
+#     """deletes a note"""
+#     if "username" in session:
+#         try:
+#             book = Book.query.get_or_404(book_id);
+#             if session["username"] == book.username:
+#                 note = Note.query.get_or_404(note_id)
+#                 db.session.delete(note)
+#                 db.session.commit()
+#                 return jsonify({'message':'Deleted!'})
+#         except Exception as e:
+#             print('-------------------')
+#             print(e)
+#             print('-------------------')
+#     return jsonify({'message':'Unauthorized!'}), 401
+#
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ################Libraries###############
 
 

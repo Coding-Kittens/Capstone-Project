@@ -1,5 +1,5 @@
 import Place from "./Place";
-import PopUpForm from "../forms/PopUpForm";
+import PlaceForm from "../forms/PlaceForm";
 
 import { useState, useEffect } from "react";
 
@@ -65,22 +65,11 @@ const PlaceBook = ({ bookId }) => {
       <img className="CharacterBook_Image" src={noteBook} alt="NoteBook" />
 
       {currPlace && editForm ? (
-        <PopUpForm
-          closeForm={() => setEditForm(false)}
-          submit={editPlace}
-          inputs={[
-            { title: "Name", name: "name" },
-            { title: "Description", name: "description" },
-            { title: "Extra info", name: "extra_info" },
-            { title: "Public", name: "is_public", type: "checkbox" },
-          ]}
-          initData={{
-            name: places[currPlace - 1].name,
-            description: places[currPlace - 1].description,
-            extra_info: places[currPlace - 1].extra_info,
-            is_public: places[currPlace - 1].is_public,
-          }}
-          submitText="Edit Place"
+        <PlaceForm
+        closeForm={() => setEditForm(false)}
+        submit={editPlace}
+        place ={places[currPlace - 1]}
+        submitText="Edit Place"
         />
       ) : null}
 
@@ -116,22 +105,10 @@ const PlaceBook = ({ bookId }) => {
       </div>
 
       {addForm ? (
-        <PopUpForm
-          closeForm={() => setAddForm(false)}
-          submit={addPlace}
-          inputs={[
-            { title: "Name", name: "name" },
-            { title: "Description", name: "description" },
-            { title: "Extra info", name: "extra_info" },
-            { title: "Public", name: "is_public", type: "checkbox" },
-          ]}
-          initData={{
-            name: "",
-            description: "",
-            extra_info: "",
-            is_public: false,
-          }}
-          submitText="Add Place"
+        <PlaceForm
+        closeForm={() => setAddForm(false)}
+        submit={addPlace}
+        submitText="Add Place"
         />
       ) : (
         <>

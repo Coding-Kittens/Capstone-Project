@@ -15,8 +15,8 @@ import axios from "axios";
 ///
 const useAxios=(initalVal,isList=false)=>{
   const [state,setState] = useState(initalVal)
-const baseURL = process.env.REACT_APP_BASE_URL
-// const baseURL = 'http://localhost:5000';
+// const baseURL = process.env.REACT_APP_BASE_URL
+const baseURL = 'http://localhost:5000';
 //makes a request and returns the response
 //takes:
 //type or request 'get','post','patch',or 'delete'

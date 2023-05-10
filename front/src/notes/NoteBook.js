@@ -1,4 +1,4 @@
-import PopUpForm from "../forms/PopUpForm";
+import NoteForm from "../forms/NoteForm";
 import { useState, useEffect } from "react";
 
 import noteBook from "../sprites/notes1.png";
@@ -64,19 +64,12 @@ const NoteBook = ({ bookId}) => {
       <img className="CharacterBook_Image" src={noteBook} alt="NoteBook" />
 
       {currNote && editForm ? (
-        <PopUpForm
-          closeForm={() => setEditForm(false)}
-          submit={editNote}
-          inputs={[
-            { title: "Title", name: "title" },
-            { title: "Text", name: "text" },
-          ]}
-          initData={{
-            title: notes[currNote - 1].title,
-            text: notes[currNote - 1].text,
-          }}
-          submitText="Edit Note"
-        />
+        <NoteForm
+        closeForm={() => setEditForm(false)}
+        submit={editNote}
+        note ={notes[currNote - 1]}
+        submitText="Edit Note"
+      />
       ) : null}
 
       <div className="CharacterBook">
@@ -111,19 +104,11 @@ const NoteBook = ({ bookId}) => {
       </div>
 
       {addForm ? (
-        <PopUpForm
-          closeForm={() => setAddForm(false)}
-          submit={addNote}
-          inputs={[
-            { title: "Title", name: "title" },
-            { title: "Text", name: "text" },
-          ]}
-          initData={{
-            title: "",
-            text: "",
-          }}
-          submitText="Add Note"
-        />
+        <NoteForm
+        closeForm={() => setAddForm(false)}
+        submit={addNote}
+        submitText="Add Note"
+      />
       ) : (
         <>
           <button

@@ -1,6 +1,6 @@
 import ThemeForm from "../forms/ThemeForm";
 import ChangePasswordform from "../forms/ChangePasswordform";
-import PopUpForm from "../forms/PopUpForm";
+import DeleteUserForm from "../forms/DeleteUserForm";
 import { useState, useContext } from "react";
 
 import { UserContext, MessageContext } from "../context/context";
@@ -47,14 +47,9 @@ const Settings = ({ deleteUser }) => {
       </button>
 
       {deleteForm ? (
-        <PopUpForm
-          closeForm={() => setDeleteForm(false)}
-          submit={deleteUser}
-          inputs={[{ title: "Password", name: "password" }]}
-          initData={{
-            password: "",
-          }}
-          submitText="Im sure, Delete Account!"
+        <DeleteUserForm
+        closeForm={() => setDeleteForm(false)}
+        submit={deleteUser}
         />
       ) : null}
     </div>
