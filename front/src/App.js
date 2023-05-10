@@ -26,8 +26,8 @@ import './fonts.css';
 
 //makes the routs for the site
 function App() {
-  // const baseURL = process.env.REACT_APP_BASE_URL
-const baseURL = 'http://localhost:5000';
+  const baseURL = process.env.REACT_APP_BASE_URL
+// const baseURL = 'http://localhost:5000';
   const changeTheme=(idx)=>{
     setTheme({...themes[idx],changeTheme});
   }
